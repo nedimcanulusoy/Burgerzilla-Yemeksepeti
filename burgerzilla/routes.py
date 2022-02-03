@@ -85,7 +85,8 @@ class MenuOperations(Resource):
         price = json_data.get('price')
         description = json_data.get('description')
         image = json_data.get('image')
-        new_menu = Menu(product=product, price=price, description=description, image=image)
+        restaurant_menu = json_data.get('restaurant_menu')
+        new_menu = Menu(product=product, price=price, description=description, image=image, restaurant_menu=restaurant_menu)
         db.session.add(new_menu)
         db.session.commit()
         return new_menu
