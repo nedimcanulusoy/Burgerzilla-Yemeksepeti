@@ -41,7 +41,7 @@ class OwnerOperations(Resource):
         json_data = request.get_json()
         owner_name = json_data.get('owner_name')
         owner_surname = json_data.get('owner_surname')
-        owner_username = json_data.get('owner_surname')
+        owner_username = json_data.get('owner_username')
         owner_email = json_data.get('owner_email')
         owner_password = json_data.get('owner_password')
         owner_address = json_data.get('owner_address')
