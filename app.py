@@ -1,0 +1,1 @@
+from burgerzilla import app
