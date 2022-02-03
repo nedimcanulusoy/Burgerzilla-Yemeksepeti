@@ -39,7 +39,7 @@ class Owner(db.Model):
     owner_email = db.Column(db.String(length=50), unique=True, nullable=False)
     owner_password = db.Column(db.String(length=50), nullable=False)
     owner_address = db.Column(db.String(length=120), nullable=False)
-    restaurant = db.relationship('Restaurant', backref='restaurant', lazy='dynamic')
+    restaurant_owner = db.relationship('Restaurant', backref='restaurant', lazy='dynamic')
 
     # def __init__(self, owner_name, owner_surname, owner_username, owner_email, owner_password, owner_address):
     #     self.owner_name = owner_name
