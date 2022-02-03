@@ -17,7 +17,7 @@ class CustomerOperations(Resource):
         json_data = request.get_json()
         customer_name = json_data.get('customer_name')
         customer_surname = json_data.get('customer_surname')
-        customer_username = json_data.get('customer_surname')
+        customer_username = json_data.get('customer_username')
         customer_email = json_data.get('customer_email')
         customer_password = json_data.get('customer_password')
         customer_address = json_data.get('customer_address')
