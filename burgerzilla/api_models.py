@@ -21,7 +21,8 @@ Restaurant_Dataset = api.model('Restaurant', {'restaurant_name': fields.String()
 Menu_Dataset = api.model('Menu', {'product': fields.String(),
                                   'price': fields.String(),
                                   'description': fields.String(),
-                                  'image': fields.String()})
+                                  'image': fields.String(),
+                                  'restaurant_menu': fields.String()})
 
 Order_Dataset = api.model('Order', {'order_name': fields.String(),
                                     'order_price': fields.Integer(),
