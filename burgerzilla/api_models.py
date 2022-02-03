@@ -15,7 +15,8 @@ Owner_Dataset = api.model('Owner', {'owner_name': fields.String(),
                                     'owner_password': fields.String(),
                                     'owner_address': fields.String()})
 
-Restaurant_Dataset = api.model('Restaurant', {'restaurant_name': fields.String()})
+Restaurant_Dataset = api.model('Restaurant', {'restaurant_name': fields.String(),
+                                              'restaurant_owner': fields.String()})
 
 Menu_Dataset = api.model('Menu', {'product': fields.String(),
                                   'price': fields.String(),
