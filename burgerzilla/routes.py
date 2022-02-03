@@ -64,7 +64,8 @@ class RestaurantOperations(Resource):
     def post(self):
         json_data = request.get_json()
         restaurant_name = json_data.get('restaurant_name')
-        new_restaurant = Restaurant(restaurant_name=restaurant_name)
+        restaurant_owner = json_data.get('restaurant_owner')
+        new_restaurant = Restaurant(restaurant_name=restaurant_name,restaurant_owner=restaurant_owner)
         db.session.add(new_restaurant)
         db.session.commit()
         return new_restaurant
