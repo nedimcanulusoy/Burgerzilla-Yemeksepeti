@@ -36,7 +36,7 @@ class OwnerOperations(Resource):
         all_owners = Owner.query.all()
         return all_owners
 
-    @api.marshal_with(Customer_Dataset, code=201, envelope='owner')
+    @api.marshal_with(Owner_Dataset, code=201, envelope='owner')
     def post(self):
         json_data = request.get_json()
         owner_name = json_data.get('owner_name')
@@ -78,7 +78,7 @@ class MenuOperations(Resource):
         all_menus = Menu.query.all()
         return all_menus
 
-    @api.marshal_with(Restaurant_Dataset, code=201, envelope='menu')
+    @api.marshal_with(Menu_Dataset, code=201, envelope='menu')
     def post(self):
         json_data = request.get_json()
         product = json_data.get('product')
