@@ -1,32 +1,32 @@
 from flask_restx import fields
 from burgerzilla import api
 
-Customer_Dataset = api.model('Customer', {'customer_name': fields.String(),
-                                          'customer_surname': fields.String(),
-                                          'customer_username': fields.String(),
-                                          'customer_email': fields.String(),
-                                          'customer_password': fields.String(),
-                                          'customer_address': fields.String()})
+User_Dataset = api.model('User', {'name': fields.String(),
+                                  'surname': fields.String(),
+                                  'username': fields.String(),
+                                  'email': fields.String(),
+                                  'password': fields.String(),
+                                  'address': fields.String(),
+                                  'restaurant_id': fields.Integer(default=-1)})
 
-Owner_Dataset = api.model('Owner', {'owner_name': fields.String(),
-                                    'owner_surname': fields.String(),
-                                    'owner_username': fields.String(),
-                                    'owner_email': fields.String(),
-                                    'owner_password': fields.String(),
-                                    'owner_address': fields.String()})
-
-Restaurant_Dataset = api.model('Restaurant', {'restaurant_name': fields.String(),
-                                              'restaurant_owner': fields.String()})
+Restaurant_Dataset = api.model('Restaurant', {'name': fields.String()})
 
 Menu_Dataset = api.model('Menu', {'product': fields.String(),
                                   'price': fields.String(),
                                   'description': fields.String(),
                                   'image': fields.String(),
-                                  'restaurant_menu': fields.String()})
+                                  'restaurant_id': fields.Integer()})
 
-Order_Dataset = api.model('Order', {'order_name': fields.String(),
-                                    'order_price': fields.Integer(),
-                                    'order_quantity': fields.Integer(),
-                                    'order_accept_cancel': fields.Integer(),
-                                    'order_status': fields.String(),
-                                    'order_timestamp': fields.String()})
+Order_Dataset = api.model('Order', {'name': fields.String(),
+                                    'price': fields.Integer(),
+                                    'quantity': fields.Integer(),
+                                    'status': fields.String(),
+                                    'timestamp': fields.String(),
+                                    'restaurant_id': fields.Integer(),
+                                    'user_id': fields.Integer()
+                                    })
+
+Order_Menu_Dataset = api.model('Order_Menu', {'order_id': fields.Integer(),
+                                              'menu_id': fields.Integer()})
+
+Order_Menu_ID_Dataset = api.model('Order_Menu', {'menu_id': fields.Integer()})
