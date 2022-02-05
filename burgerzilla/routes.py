@@ -1,7 +1,8 @@
 from flask import request, jsonify
 from burgerzilla import api, db
 from flask_restx import Resource
-from burgerzilla.api_models import User_Dataset, Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset, Order_Menu_ID_Dataset
+from burgerzilla.api_models import User_Dataset, Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset, \
+    Order_Menu_ID_Dataset
 from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
 
 
@@ -23,8 +24,8 @@ class CustomerOperations(Resource):
         address = json_data.get('address')
         restaurant_id = json_data.get('restaurant_id')
         new_user = User(name=name, surname=surname,
-                                username=username, email=email,
-                                password=password, address=address, restaurant_id=restaurant_id)
+                        username=username, email=email,
+                        password=password, address=address, restaurant_id=restaurant_id)
         db.session.add(new_user)
         db.session.commit()
         return new_user
@@ -82,10 +83,31 @@ class OrderOperations(Resource):
         price = json_data.get('price')
         quantity = json_data.get('quantity')
         status = json_data.get('status')
-        restaurant_id =json_data.get('restaurant_id')
+        restaurant_id = json_data.get('restaurant_id')
         user_id = json_data.get('user_id')
         new_order = Order(name=name, price=price, quantity=quantity, status=status, restaurant_id=restaurant_id,
                           user_id=user_id)
         db.session.add(new_order)
         db.session.commit()
         return new_order
+
+
+@api.route('/order/<int:id>')
+class OrderMenuOperations(Resource):
+    @api.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
+    def get(self, id):
+        menus = Order_Menu.query.filter_by(order_id=id)
+        menu_list = []
+        for each in menus:
+            menu_list.append(each)
+
+        return menu_list
+
+    @api.marshal_with(Order_Menu_Dataset, code=201, envelope='order_menu')
+    def post(self, id):
+        json_data = request.get_json()
+        menu_id = json_data.get('menu_id')
+        new_body = Order_Menu(menu_id=menu_id, order_id=id)
+        db.session.add(new_body)
+        db.session.commit()
+        return new_body
