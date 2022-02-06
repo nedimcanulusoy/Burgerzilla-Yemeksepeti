@@ -80,11 +80,25 @@ class OrderOperations(Resource):
     def post(self):
         json_data = request.get_json()
         name = json_data.get('name')
-        price = json_data.get('price')
         quantity = json_data.get('quantity')
         status = json_data.get('status')
-        restaurant_id = json_data.get('restaurant_id')
-        user_id = json_data.get('user_id')
+
+        price_query = db.session.query(Menu.price).first()
+        price = 0
+        for p in price_query:
+            price = p
+
+
+        restaurant_id_query = db.session.query(Restaurant.id).first()
+        restaurant_id = 0
+        for restaurant_id_ in restaurant_id_query:
+            restaurant_id = restaurant_id_
+
+        user_id_query = db.session.query(User.id).first()
+        user_id = 0
+        for user_id_ in user_id_query:
+            user_id = user_id_
+
         new_order = Order(name=name, price=price, quantity=quantity, status=status, restaurant_id=restaurant_id,
                           user_id=user_id)
         db.session.add(new_order)
