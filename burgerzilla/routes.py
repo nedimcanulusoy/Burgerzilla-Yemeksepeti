@@ -86,8 +86,7 @@ class OrderOperations(Resource):
         price_query = db.session.query(Menu.price).first()
         price = 0
         for p in price_query:
-            price = int(p)*int(quantity)
-
+            price = int(p) * int(quantity)
 
         restaurant_id_query = db.session.query(Restaurant.id).first()
         restaurant_id = 0
@@ -106,10 +105,20 @@ class OrderOperations(Resource):
         return new_order
 
 
+@api.route('/order/detail/<int:id>')
+class OrderDetail(Resource):
+    @api.marshal_list_with(Order_Dataset, code=200, envelope='menu')
+    def get(self, id):
+        '''Returns order detail of the user'''
+        order = db.session.query(Order).filter_by(user_id=id)
+        return [i for i in order]
+
+
 @api.route('/order/<int:id>')
 class OrderMenuOperations(Resource):
     @api.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
     def get(self, id):
+        '''Returns how many menus have been ordered by the user'''
         menus = Order_Menu.query.filter_by(order_id=id)
         menu_list = []
         for each in menus:
