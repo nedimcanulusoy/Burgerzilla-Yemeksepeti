@@ -107,7 +107,7 @@ class OrderOperations(Resource):
 
 @api.route('/order/detail/<int:id>')
 class OrderDetail(Resource):
-    @api.marshal_list_with(Order_Dataset, code=200, envelope='menu')
+    @api.marshal_list_with(Order_Dataset, code=200, envelope='order_detail')
     def get(self, id):
         '''Returns order detail of the user'''
         order = db.session.query(Order).filter_by(user_id=id)
