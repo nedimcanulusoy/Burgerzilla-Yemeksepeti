@@ -86,7 +86,7 @@ class OrderOperations(Resource):
         price_query = db.session.query(Menu.price).first()
         price = 0
         for p in price_query:
-            price = p
+            price = int(p)*int(quantity)
 
 
         restaurant_id_query = db.session.query(Restaurant.id).first()
