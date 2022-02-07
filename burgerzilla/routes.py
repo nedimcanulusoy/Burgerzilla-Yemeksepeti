@@ -114,6 +114,15 @@ class OrderDetail(Resource):
         return [i for i in order]
 
 
+@api.route('/order/edit/<int:id>')
+class OrderEdit(Resource):
+    @api.marshal_list_with(Order_Dataset, code=200, envelope='current_order')
+    def get(self, id):
+        '''Returns order detail of the user'''
+        order = db.session.query(Order).filter_by(user_id=id)
+        return [i for i in order]
+
+
 @api.route('/order/<int:id>')
 class OrderMenuOperations(Resource):
     @api.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
