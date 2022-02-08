@@ -38,7 +38,7 @@ class Menu(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'menu'
     id = db.Column(db.Integer, primary_key=True)
-    product = db.Column(db.String(length=50), nullable=False)
+    name = db.Column(db.String(length=50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(length=100), nullable=False)
     image = db.Column(db.String(length=120), nullable=False)
@@ -57,9 +57,6 @@ class Order(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(length=50), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(length=50), nullable=False)
     timestamp = db.Column(db.String(length=25), default=datetime.utcnow().strftime('%m/%d/%Y - %H:%M:%S'))
     restaurant_id = db.Column(db.Integer, db.ForeignKey('bzschema.restaurant.id'))
@@ -67,8 +64,8 @@ class Order(db.Model):
     orderid = db.relationship('Order_Menu', backref='orderid', lazy='dynamic')
 
     def __repr__(self):
-        return "<Order(name={}, price={}, quantity={}, status={}, user_id={})>".format(
-            self.name, self.price, self.quantity, self.status, self.user_id)
+        return "<Order(name={}, status={}, user_id={})>".format(
+            self.name, self.status, self.user_id)
 
 
 class Order_Menu(db.Model):
