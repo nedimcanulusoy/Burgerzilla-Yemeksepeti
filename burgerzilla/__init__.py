@@ -10,4 +10,5 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 api = Api(app, doc="/docs", title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0")
 
-from burgerzilla import routes, models
+from burgerzilla.customer import customer
+from burgerzilla.restaurant import restaurant
