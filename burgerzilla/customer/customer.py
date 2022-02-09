@@ -2,7 +2,7 @@ from flask import request
 from burgerzilla import api, db
 from flask_restx import Resource
 from burgerzilla.api_models import (User_Dataset, Order_Dataset, Order_Menu_Dataset, Order_Menu_ID_Dataset,
-                                    New_Order_Dataset, Order_Detail_Dataset)
+                                    New_Order_Dataset, Order_Detail_Dataset, Response_Message)
 from burgerzilla.models import User, Menu, Order, Order_Menu
 
 
@@ -33,12 +33,12 @@ class CustomerOperations(Resource):
 
 @api.route('/customer/order')
 class OrderOperations(Resource):
-    @api.marshal_with(Order_Detail_Dataset)
+    @api.marshal_with(Order_Detail_Dataset,Response_Message)
     def get(self):
         user_id = 1  # JWT den gelmis gibi sayiliyor
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
         if order == None:
-            return {"Error": "There is no valid order!"}, 404
+            return {"Message": "There is no valid order!"}, 404
         else:
             user = User.query.get(user_id)
 
@@ -56,7 +56,7 @@ class OrderOperations(Resource):
             return {"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
                     'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price}, 200
 
-    @api.marshal_with(New_Order_Dataset, envelope='order')
+    @api.marshal_with(New_Order_Dataset,Response_Message, envelope='order')
     def post(self):
         user_id = 1
         user = User.query.get(user_id)  # JWT'den geliyor
@@ -64,7 +64,7 @@ class OrderOperations(Resource):
         status = "NEW"  # statik tanımlanmış durumda
 
         if order.status == status:
-            return {"Error": "You can not create another one until your current order is complete!"}, 404
+            return {"Message": "You can not create another one until your current order is complete!"}, 404
         else:
             new_order = Order(status=status, restaurant_id=user.restaurant_id,
                               user_id=user_id)
@@ -101,20 +101,29 @@ class OrderAdd(Resource):
 
 @api.route('/customer/order/delete')
 class OrderDelete(Resource):
+    @api.marshal_with(Response_Message)
     def post(self):
-        user_id = 1
-        menu_id = 1
+        user_id = 1 #JWT den gelecek
+        menu_id = 1 #Postmandan verilecek
         menu_id_exists = db.session.query(Menu.id).first() is not None
 
         if not menu_id_exists:
-            return {"Error": "Order could not deleted!"}, 404
+            return {"Message": "Order could not deleted!"}, 404
 
-        order_id = db.session.query(Order.id).filter_by(user_id=user_id, status="NEW")
-        del_order_menu = db.session.query(Order_Menu.id).filter_by(order_id=order_id, menu_id=menu_id)
-        db.session.delete(del_order_menu)
+        order_id = db.session.query(Order).filter_by(user_id=user_id, status="NEW").first().id
+
+        menu_exists_in_order_menu_table = db.session.query(Order_Menu).filter_by(order_id=order_id, menu_id=menu_id).first() is not None
+
+        if not menu_exists_in_order_menu_table:
+            return {"Message": "Order could not deleted, because there is no valid menu!"}, 404
+
+        del_order = db.session.query(Order_Menu).filter_by(order_id=order_id, menu_id=menu_id).first()
+        db.session.delete(del_order)
         db.session.commit()
 
-        return {"Message": "DELETED!"}, 200
+
+        return {"Message": "Order successfully deleted!"}, 200
+
 
 
 @api.route('/customer/order/<int:id>')
