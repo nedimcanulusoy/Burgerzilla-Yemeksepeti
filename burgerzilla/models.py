@@ -1,5 +1,6 @@
 from burgerzilla import db
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(db.Model):
@@ -10,10 +11,22 @@ class User(db.Model):
     surname = db.Column(db.String(length=50), nullable=False)
     username = db.Column(db.String(length=50), unique=True, nullable=False)
     email = db.Column(db.String(length=50), unique=True, nullable=False)
-    password = db.Column(db.String(length=50), nullable=False)
+    password_hash = db.Column(db.String(length=128), nullable=False)
     address = db.Column(db.String(length=120), nullable=False)
     order = db.relationship('Order', backref='c_order', lazy='dynamic')
     restaurant_id = db.Column(db.Integer, db.ForeignKey('bzschema.restaurant.id'))
+
+    @property
+    def password(self):
+        raise AttributeError("Password is not a readable attribute")
+
+    @password.setter
+    def password(self, password_hash):
+        self.password_hash = generate_password_hash(password_hash)
+
+    def verify_password(self, attempted_password):
+        return check_password_hash(self.password_hash, attempted_password)
+
 
     def __repr__(self):
         return "<User(name={}, surname={}, username={}, email={}, address={}, restaurant_id={})>".format(
