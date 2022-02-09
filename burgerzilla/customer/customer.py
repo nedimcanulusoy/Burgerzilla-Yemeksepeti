@@ -13,7 +13,7 @@ class CustomerOperations(Resource):
         all_customers = User.query.all()
         return all_customers
 
-    @api.marshal_with(User_Dataset, code=201, envelope='user')
+    @api.marshal_with(Response_Message, code=201, envelope='user')
     def post(self):
         json_data = request.get_json()
         name = json_data.get('name')
@@ -28,7 +28,7 @@ class CustomerOperations(Resource):
                         password=password, address=address, restaurant_id=restaurant_id)
         db.session.add(new_user)
         db.session.commit()
-        return new_user
+        return {"Message": "Successful"}, 200
 
 
 @api.route('/customer/order')
