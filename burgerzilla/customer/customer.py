@@ -124,7 +124,24 @@ class OrderDelete(Resource):
 
         return {"Message": "Order successfully deleted!"}, 200
 
+@api.route('/customer/order/cancel')
+class OrderCancel(Resource):
+    @api.marshal_with(Response_Message)
+    def post(self):
+        user_id = 1
+        order = db.session.query(Order).filter(Order.user_id==user_id, Order.status=="NEW").first()  # kullancinin siparisi var mi (sepet/order)
+        order_exists = order is not None  # kullancinin siparisi var mi (sepet/order)
 
+        if not order_exists:
+            return {"Message": "There is no available order!"}, 404
+
+        order_id = order.id
+
+        db.session.query(Order).filter_by(id=order_id).update(
+            {'status': 'CANCELLED'})  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
+        db.session.commit()
+
+        return {"Message": "Your order has been cancelled!"}, 200
 
 @api.route('/customer/order/<int:id>')
 class OrderMenuOperations(Resource):
