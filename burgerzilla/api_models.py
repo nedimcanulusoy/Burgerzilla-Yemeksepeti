@@ -54,6 +54,6 @@ Restaurant_Order_Dataset = api.model('Order', {'name': fields.String(),
                                                'sum_price': fields.Integer()
                                                })
 
-Delete_Msg = {'Message': fields.String(default="Order has been successfully deleted!")}
+Response_Message = {'Message': fields.String()}
 
 Error_Dataset = api.model("Error", {"result": "error", "message": fields.String})
