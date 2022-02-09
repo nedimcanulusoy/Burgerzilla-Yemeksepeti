@@ -64,8 +64,7 @@ class Order(db.Model):
     orderid = db.relationship('Order_Menu', backref='orderid', lazy='dynamic')
 
     def __repr__(self):
-        return "<Order(name={}, status={}, user_id={})>".format(
-            self.name, self.status, self.user_id)
+        return "<Order(status={}, user_id={})>".format(self.status, self.user_id)
 
 
 class Order_Menu(db.Model):
