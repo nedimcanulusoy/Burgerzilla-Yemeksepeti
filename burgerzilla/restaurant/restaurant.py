@@ -2,8 +2,8 @@ import json
 from flask import request
 from burgerzilla import api, db
 from flask_restx import Resource, marshal
-from burgerzilla.api_models import Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset, \
-    Restaurant_Order_Dataset, Delete_Msg
+from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset,
+                                    Restaurant_Order_Dataset, Response_Message)
 from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
 
 
@@ -94,16 +94,19 @@ class RestaurantOrderDetail(Resource):
                  'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price}, Order_Dataset), 200
 
 
-@api.route('/restaurant/order/delete')  # bu detail goruntuleme olabilir
-class RestaurantOrderDelete(Resource):
-    @api.marshal_with(Delete_Msg, envelope='deleted_order_restaurant')
-    def delete(self):
-        '''Deletes all current orders of the user'''
-        user_id = 1
-        user = User.query.get(user_id)
-        delete_order = Order.query.get_or_404(user.id)  # JWT'den geliyor
+@api.route('/restaurant/order/cancel')
+class OrderCancel(Resource):
+    @api.marshal_with(Response_Message)
+    def post(self):
+        order_id = 1  # postmandan gelecek
+        order_id_exists = db.session.query(Order).filter(Order.id == order_id, Order.status != "NEW",
+                                                         Order.status != "CANCELLED").first() is not None  # kullancinin siparisi var mi (sepet/order)
 
-        db.session.delete(delete_order)
+        if not order_id_exists:
+            return {"Message": "There is no available order!"}, 404
+
+        db.session.query(Order).filter_by(id=order_id).update(
+            {'status': 'CANCELLED'})  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
         db.session.commit()
 
-        return (json.dumps({'Message': "Order has been successfully deleted!"})), 200
+        return {"Message": "DELETED!"}, 200
