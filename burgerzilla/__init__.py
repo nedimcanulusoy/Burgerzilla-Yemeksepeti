@@ -15,3 +15,5 @@ from burgerzilla.customer import customer
 from burgerzilla.restaurant import restaurant
 from burgerzilla.auth.register import register
 from burgerzilla.auth.login import login
+from burgerzilla.models import User
+user_manager = UserManager(app, db, User)
