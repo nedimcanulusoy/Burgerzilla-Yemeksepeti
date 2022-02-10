@@ -29,7 +29,7 @@ class Register(Resource):
 
             db.session.add(new_user)
             db.session.commit()
-            return {"Message": "User successfully added!"}
+            return {"Message": "User successfully registered!"}
 
         else:
             return {"Message": "This username and email are already taken, try another one!"}
