@@ -1,5 +1,5 @@
 from burgerzilla import db
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -89,3 +89,10 @@ class Order_Menu(db.Model):
 
     def __repr__(self):
         return "<Order_Menu(id={},order_id={},menu_id={})>".format(self.id, self.order_id, self.menu_id)
+
+class TokenBlocklist(db.Model):
+    __table_args__ = {"schema": "bzschema"}
+    __tablename__ = 'token_block_list'
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
