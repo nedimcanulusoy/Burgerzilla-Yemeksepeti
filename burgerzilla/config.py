@@ -28,6 +28,7 @@ class Config(object):
     stream = open(config_path, 'r')
     config = yaml.load(stream, Loader=yaml.FullLoader)
 
+    USER_ENABLE_EMAIL = False
     SECRET_KEY = config["secret"]
     JWT_SECRET_KEY = config["secret"]
     SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{config["database"]["user"]}:' \
