@@ -15,16 +15,6 @@ class RestaurantOperations(Resource):
         all_restaurants = Restaurant.query.all()
         return all_restaurants
 
-    @jwt_required()
-    @api.marshal_with(Restaurant_Dataset, code=201, envelope='restaurant')
-    def post(self):
-        json_data = request.get_json()
-        name = json_data.get('name')
-        new_restaurant = Restaurant(name=name)
-        db.session.add(new_restaurant)
-        db.session.commit()
-        return new_restaurant
-
 
 @api.route('/restaurant/menu')
 class MenuOperations(Resource):
