@@ -26,7 +26,7 @@ class RestaurantOperations(Resource):
         return new_restaurant
 
 
-@api.route('/menu')
+@api.route('/restaurant/menu')
 class MenuOperations(Resource):
     @api.marshal_list_with(Menu_Dataset, code=200, envelope='menus')
     def get(self):
