@@ -1,9 +1,10 @@
 from burgerzilla import db
 from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_user import current_user, login_required, roles_required, UserManager, UserMixin
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +16,7 @@ class User(db.Model):
     address = db.Column(db.String(length=120), nullable=False)
     order = db.relationship('Order', backref='c_order', lazy='dynamic')
     restaurant_id = db.Column(db.Integer, db.ForeignKey('bzschema.restaurant.id'))
+    roles = db.relationship('Role', secondary='bzschema.user_roles')
 
     @property
     def password(self):
@@ -33,6 +35,20 @@ class User(db.Model):
             self.name, self.surname, self.username, self.email,
             self.address, self.restaurant_id)
 
+# Define the Role data-model
+class Role(db.Model):
+    __table_args__ = {"schema": "bzschema"}
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+# Define the UserRoles association table
+class UserRoles(db.Model):
+    __table_args__ = {"schema": "bzschema"}
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('bzschema.user.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('bzschema.roles.id', ondelete='CASCADE'))
 
 class Restaurant(db.Model):
     __table_args__ = {"schema": "bzschema"}
