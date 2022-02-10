@@ -1,5 +1,6 @@
-import json
 from flask import request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from burgerzilla import api, db
 from flask_restx import Resource, marshal
 from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset,
@@ -14,6 +15,7 @@ class RestaurantOperations(Resource):
         all_restaurants = Restaurant.query.all()
         return all_restaurants
 
+    @jwt_required()
     @api.marshal_with(Restaurant_Dataset, code=201, envelope='restaurant')
     def post(self):
         json_data = request.get_json()
@@ -31,6 +33,7 @@ class MenuOperations(Resource):
         all_menus = Menu.query.all()
         return all_menus
 
+    @jwt_required()
     @api.marshal_with(Menu_Dataset, code=201, envelope='menu')
     def post(self):
         json_data = request.get_json()
@@ -47,10 +50,11 @@ class MenuOperations(Resource):
 
 @api.route('/restaurant/order')
 class RestaurantOrder(Resource):
+    @jwt_required()
     @api.marshal_list_with(Order_Menu_Dataset, envelope='restaurant_order_item')
     def get(self):
         '''Returns which menu order was taken'''
-        user_id = 1  # JWT den gelmis gibi sayiliyor
+        user_id = get_jwt_identity()
         user = User.query.get(user_id)
         order = Order.query.filter_by(user_id=user.id).first()
         menus = Order_Menu.query.filter_by(order_id=order.id)
@@ -64,10 +68,11 @@ class RestaurantOrder(Resource):
 
 @api.route('/restaurant/order/detail')
 class RestaurantOrderDetail(Resource):
+    @jwt_required()
     @api.marshal_list_with(Restaurant_Order_Dataset, envelope='restaurant_order_item_detail')
     def get(self):
         '''Returns order details of the user to the Restaurant'''
-        user_id = 1  # JWT den gelmis gibi sayiliyor
+        user_id = get_jwt_identity()  # JWT den gelmis gibi sayiliyor
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
 
         if order == None:
@@ -96,9 +101,10 @@ class RestaurantOrderDetail(Resource):
 
 @api.route('/restaurant/order/cancel')
 class OrderCancel(Resource):
+    @jwt_required()
     @api.marshal_with(Response_Message)
     def post(self):
-        order_id = 1  # postmandan gelecek
+        order_id = get_jwt_identity()  # postmandan gelecek
         order_id_exists = db.session.query(Order).filter(Order.id == order_id, Order.status != "NEW",
                                                          Order.status != "CANCELLED").first() is not None  # kullancinin siparisi var mi (sepet/order)
 
