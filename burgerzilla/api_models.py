@@ -7,7 +7,8 @@ User_Dataset = api.model('User', {'name': fields.String(),
                                   'email': fields.String(),
                                   'password': fields.String(),
                                   'address': fields.String(),
-                                  'restaurant_id': fields.Integer(default=-1)})
+                                  'restaurant_id': fields.Integer(default=-1),
+                                  'Message':fields.String})
 
 Restaurant_Dataset = api.model('Restaurant', {'name': fields.String()})
 
@@ -57,3 +58,10 @@ Restaurant_Order_Dataset = api.model('Order', {'name': fields.String(),
 Response_Message = {'Message': fields.String()}
 
 Error_Dataset = api.model("Error", {"result": "error", "message": fields.String})
+
+Login_Dataset = api.model('User', {'username': fields.String(),
+                                  'password': fields.String()})
+
+JWT_Dataset = api.model('JWT_Dataset', {'Message':fields.String,
+                                        'access_token':fields.String,
+                                        'refresh_token':fields.String})
