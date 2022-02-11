@@ -1,19 +1,37 @@
 from flask import Flask
 from flask_restx import Api
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from config import Config
+from flask_user import UserManager
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-jwt = JWTManager(app)
-api = Api(app, doc="/docs", title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0")
+from burgerzilla.config import Config
+from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
-from burgerzilla.customer import customer
-from burgerzilla.restaurant import restaurant
-from burgerzilla.auth.register import register
-from burgerzilla.auth.login import login
-from burgerzilla.models import User
-user_manager = UserManager(app, db, User)
+db = SQLAlchemy()
+jwt = JWTManager()
+migrate = Migrate()
+api = Api()
+
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+    jwt.init_app(app)
+    migrate.init_app(app, db)
+
+    from .models import User
+    user_manager = UserManager(app, db, User)
+
+    from burgerzilla.routes.auth import auth
+    from burgerzilla.routes.customer import customer
+    from burgerzilla.routes.restaurant import restaurant
+
+    api.add_namespace(auth)
+    api.add_namespace(customer)
+    api.add_namespace(restaurant)
+    api.init_app(app, title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0")
+
+
+    return app
