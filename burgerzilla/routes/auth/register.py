@@ -1,15 +1,14 @@
-from random import random
-
 from flask import request
-from burgerzilla import api, db
+from burgerzilla import db
 from flask_restx import Resource
-from burgerzilla.api_models import Response_Message, User_Dataset
+from burgerzilla.api_models import Response_Message
 from burgerzilla.models import User, Role, Restaurant
 
+from burgerzilla.routes.auth import auth
 
-@api.route('/register')
+@auth.route('/register')
 class Register(Resource):
-    @api.marshal_with(Response_Message, code=201, envelope='user')
+    @auth.marshal_with(Response_Message, code=201, envelope='user')
     def post(self):
 
         json_data = request.json
@@ -22,7 +21,7 @@ class Register(Resource):
         is_owner = json_data.get('is_owner') or False
         restaurant = json_data['restaurant']
 
-        username_exists = db.session.query(User).filter_by(username=username).first() is not None
+        username_exists = db.session.query(User).filter(User.username == username).first() is not None
         email_exists = db.session.query(User).filter_by(email=email).first() is not None
 
         if username_exists or email_exists:
