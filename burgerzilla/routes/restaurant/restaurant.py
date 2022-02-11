@@ -1,30 +1,30 @@
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
-from burgerzilla import api, db
+from burgerzilla import db
 from flask_restx import Resource, marshal
 from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Order_Dataset, Order_Menu_Dataset,
                                     Restaurant_Order_Dataset, Response_Message)
 from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
 
+from burgerzilla.routes.restaurant import restaurant
 
-@api.route('/restaurant')
+@restaurant.route('/restaurant')
 class RestaurantOperations(Resource):
-    @api.marshal_list_with(Restaurant_Dataset, code=200, envelope='restaurants')
+    @restaurant.marshal_list_with(Restaurant_Dataset, code=200, envelope='restaurants')
     def get(self):
         all_restaurants = Restaurant.query.all()
         return all_restaurants
 
 
-@api.route('/restaurant/menu')
+@restaurant.route('/restaurant/menu')
 class MenuOperations(Resource):
-    @api.marshal_list_with(Menu_Dataset, code=200, envelope='menus')
+    @restaurant.marshal_list_with(Menu_Dataset, code=200, envelope='menus')
     def get(self):
         all_menus = Menu.query.all()
         return all_menus
 
     @jwt_required()
-    @api.marshal_with(Menu_Dataset, code=201, envelope='menu')
+    @restaurant.marshal_with(Menu_Dataset, code=201, envelope='menu')
     def post(self):
         json_data = request.get_json()
         product = json_data.get('product')
@@ -38,10 +38,10 @@ class MenuOperations(Resource):
         return new_menu
 
 
-@api.route('/restaurant/order')
+@restaurant.route('/restaurant/order')
 class RestaurantOrder(Resource):
     @jwt_required()
-    @api.marshal_list_with(Order_Menu_Dataset, envelope='restaurant_order_item')
+    @restaurant.marshal_list_with(Order_Menu_Dataset, envelope='restaurant_order_item')
     def get(self):
         '''Returns which menu order was taken'''
         user_id = get_jwt_identity()
@@ -56,10 +56,10 @@ class RestaurantOrder(Resource):
         return item_list
 
 
-@api.route('/restaurant/order/detail')
+@restaurant.route('/restaurant/order/detail')
 class RestaurantOrderDetail(Resource):
     @jwt_required()
-    @api.marshal_list_with(Restaurant_Order_Dataset, envelope='restaurant_order_item_detail')
+    @restaurant.marshal_list_with(Restaurant_Order_Dataset, envelope='restaurant_order_item_detail')
     def get(self):
         '''Returns order details of the user to the Restaurant'''
         user_id = get_jwt_identity()  # JWT den gelmis gibi sayiliyor
@@ -89,10 +89,10 @@ class RestaurantOrderDetail(Resource):
                  'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price}, Order_Dataset), 200
 
 
-@api.route('/restaurant/order/cancel')
+@restaurant.route('/restaurant/order/cancel')
 class OrderCancel(Resource):
     @jwt_required()
-    @api.marshal_with(Response_Message)
+    @restaurant.marshal_with(Response_Message)
     def post(self):
         order_id = get_jwt_identity()  # postmandan gelecek
         order_id_exists = db.session.query(Order).filter(Order.id == order_id, Order.status != "NEW",
