@@ -12,7 +12,8 @@ jwt = JWTManager()
 migrate = Migrate()
 api = Api()
 
-auth_header = {'Authorization': {'in': 'header', 'description': "An authorization token: 'Bearer \<token\>'", 'required':True}}
+auth_header = {
+    'Authorization': {'in': 'header', 'description': "An authorization token: 'Bearer \<token\>'", 'required': True}}
 
 
 def create_app(config_class=Config):
@@ -40,7 +41,7 @@ def create_app(config_class=Config):
             'name': 'Authorization'
         },
     }
-    api.init_app(app, doc="/docs", title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0", security='Bearer Auth', authorizations=authorizations)
-
+    api.init_app(app, doc="/docs", title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0",
+                 security='Bearer Auth', authorizations=authorizations)
 
     return app
