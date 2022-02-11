@@ -8,6 +8,8 @@ User_Dataset = api.model('User', {'name': fields.String(),
                                   'password': fields.String(),
                                   'address': fields.String(),
                                   'restaurant_id': fields.Integer(default=-1),
+                                  'is_owner': fields.Boolean(default=False),
+                                  'restaurant': fields.String,
                                   'Message':fields.String})
 
 Restaurant_Dataset = api.model('Restaurant', {'name': fields.String()})
