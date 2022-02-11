@@ -12,6 +12,8 @@ jwt = JWTManager()
 migrate = Migrate()
 api = Api()
 
+auth_header = {'Authorization': {'in': 'header', 'description': "An authorization token: 'Bearer \<token\>'", 'required':True}}
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
