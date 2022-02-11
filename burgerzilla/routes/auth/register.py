@@ -1,16 +1,17 @@
 from flask import request
 from burgerzilla import db
 from flask_restx import Resource
-from burgerzilla.api_models import Response_Message
+from burgerzilla.api_models import Response_Message, User_Dataset
 from burgerzilla.models import User, Role, Restaurant
 
 from burgerzilla.routes.auth import auth
 
 @auth.route('/register')
 class Register(Resource):
+    @auth.doc(body=User_Dataset, responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
     @auth.marshal_with(Response_Message, code=201, envelope='user')
     def post(self):
-
+        """User Register"""
         json_data = request.json
         name = json_data.get('name')
         surname = json_data.get('surname')
