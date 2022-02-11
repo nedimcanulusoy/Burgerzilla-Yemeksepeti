@@ -1,8 +1,8 @@
 from flask import request
-from burgerzilla import db, jwt
+from burgerzilla import db, jwt, auth_header
 from flask_restx import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, jwt_required
-from burgerzilla.api_models import JWT_Dataset, Response_Message
+from burgerzilla.api_models import JWT_Dataset, Response_Message, Login_Dataset
 from burgerzilla.models import User, TokenBlocklist
 from datetime import datetime, timezone
 
@@ -16,11 +16,12 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     return token is not None
 
 @auth.route('/login')
+@auth.doc(body=Login_Dataset,
+          responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
 class AuthLogin(Resource):
-    # @login.doc("Auth Login",
-    #          responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
     @auth.marshal_with(JWT_Dataset, Response_Message)
     def post(self):
+        """User Login"""
         json_data = request.get_json()
         username = json_data.get('username')
         password = json_data.get('password')
@@ -39,11 +40,15 @@ class AuthLogin(Resource):
         return {"access_token": access_token, "refresh_token": refresh_token,
                 "Message": "The token has been successfully created!"}
 
+
+
+
 @auth.route('/logout')
 class AuthLogout(Resource):
     @jwt_required()
     @auth.marshal_with(Response_Message)
     def post(self):
+        """User Logout"""
         jti = get_jwt()["jti"]
         now = datetime.now(timezone.utc)
         db.session.add(TokenBlocklist(jti=jti, created_at=now))
