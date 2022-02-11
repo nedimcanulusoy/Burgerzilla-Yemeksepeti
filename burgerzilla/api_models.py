@@ -55,7 +55,7 @@ Restaurant_Order_Dataset = api.model('Order', {'name': fields.String(),
                                                'sum_price': fields.Integer()
                                                })
 
-Response_Message = {'Message': fields.String()}
+Response_Message = api.model('Message', {'Message': fields.String()})
 
 Error_Dataset = api.model("Error", {"result": "error", "message": fields.String})
 
