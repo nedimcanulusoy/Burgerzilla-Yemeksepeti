@@ -31,9 +31,6 @@ def create_app(config_class=Config):
     from burgerzilla.routes.customer import customer
     from burgerzilla.routes.restaurant import restaurant
 
-    api.add_namespace(auth)
-    api.add_namespace(customer)
-    api.add_namespace(restaurant)
     authorizations = {
         'Bearer Auth': {
             'type': 'apiKey',
@@ -41,7 +38,11 @@ def create_app(config_class=Config):
             'name': 'Authorization'
         },
     }
-    api.init_app(app, doc="/docs", title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0",
+    api.init_app(app, doc=True, title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0",
                  security='Bearer Auth', authorizations=authorizations)
+
+    api.add_namespace(auth)
+    api.add_namespace(customer_ns)
+    api.add_namespace(restaurant_ns)
 
     return app
