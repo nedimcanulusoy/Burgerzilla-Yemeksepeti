@@ -40,12 +40,13 @@ Order_Detail_Dataset = customer_ns.model('OrderDetail', {
     'sum_price': fields.Integer()
 })
 
-Order_Dataset = api.model('Order', {'id': fields.Integer(),
-                                    'status': fields.String(default='NEW'),
-                                    'timestamp': fields.String(),
-                                    'restaurant_id': fields.Integer(),
-                                    'user_id': fields.Integer(),
-                                    })
+Order_Dataset = api.model('Order', {
+    'id': fields.Integer(),
+    'status': fields.String(default='NEW'),
+    'timestamp': fields.String(),
+    'restaurant_id': fields.Integer(),
+    'user_id': fields.Integer(),
+})
 
 # New order data set
 New_Order_Dataset = customer_ns.model('Order', {
@@ -78,9 +79,13 @@ Restaurant_Order_Dataset = restaurant_ns.model('Order', {
     'sum_price': fields.Integer()
 })
 
-Response_Message = api.model('Message', {'Message': fields.String()})
+Response_Message = api.model('Message', {
+    'Message': fields.String()
+})
 
-Error_Dataset = api.model("Error", {"result": "error", "message": fields.String})
+Error_Dataset = api.model("Error", {
+    "result": "error", "message": fields.String()
+})
 
 Login_Dataset = auth_ns.model('Login User', {
     'username': fields.String(),
