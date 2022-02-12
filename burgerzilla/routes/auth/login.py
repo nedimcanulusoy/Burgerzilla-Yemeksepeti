@@ -15,10 +15,11 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
 
+
 @auth.route('/login')
-@auth.doc(body=Login_Dataset,
-          responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
 class AuthLogin(Resource):
+    @auth.doc(body=Login_Dataset,
+              responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
     @auth.marshal_with(JWT_Dataset, Response_Message)
     def post(self):
         """User Login"""
@@ -41,8 +42,6 @@ class AuthLogin(Resource):
                 "Message": "The token has been successfully created!"}
 
 
-
-
 @auth.route('/logout')
 class AuthLogout(Resource):
     @jwt_required()
@@ -53,4 +52,4 @@ class AuthLogout(Resource):
         now = datetime.now(timezone.utc)
         db.session.add(TokenBlocklist(jti=jti, created_at=now))
         db.session.commit()
-        return {"Message":"Logged out and JWT revoked"}
+        return {"Message": "Logged out and JWT revoked"}
