@@ -1,18 +1,22 @@
 from flask import request
-from burgerzilla import db
+from burgerzilla import db, auth_header
 from flask_restx import Resource
 from burgerzilla.api_models import (Order_Dataset, Order_Menu_Dataset, Order_Menu_ID_Dataset,
                                     New_Order_Dataset, Order_Detail_Dataset, Response_Message)
 from burgerzilla.models import User, Menu, Order, Order_Menu
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from burgerzilla.routes.customer import customer
+from burgerzilla.routes import customer_ns
 
-@customer.route('/customer/order')
+
+@customer_ns.route('/order')
 class OrderOperations(Resource):
     @jwt_required()
-    @customer.response(model=Order_Detail_Dataset, code=201, description="Successful")
-    @customer.response(model=Response_Message, code=404, description="Not found")
+    @customer_ns.doc(body=Order_Detail_Dataset, security="apiKey", params=auth_header,
+                  responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
+                             404: "User Not Found"})
+    @customer_ns.response(model=Order_Detail_Dataset, code=201, description="Successful")
+    @customer_ns.response(model=Response_Message, code=404, description="Not found")
     def get(self):
         user_id = get_jwt_identity()  # JWT den gelmis gibi sayiliyor
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
@@ -37,8 +41,8 @@ class OrderOperations(Resource):
                 'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price}, 200
 
     @jwt_required()
-    @customer.response(model=New_Order_Dataset, code=201, description="Successful")
-    @customer.response(model=Response_Message, code=422, description="Bad request")
+    @customer_ns.response(model=New_Order_Dataset, code=201, description="Successful")
+    @customer_ns.response(model=Response_Message, code=422, description="Bad request")
     def post(self):
         user_id = get_jwt_identity()
         user = User.query.get(user_id)  # JWT'den geliyor
@@ -58,10 +62,10 @@ class OrderOperations(Resource):
         return {"status": new_order.status, "restaurant_id": new_order.restaurant_id, "user_id": new_order.user_id}
 
 
-@customer.route('/customer/orders')
+@customer_ns.route('/orders')
 class ListOrders(Resource):
     @jwt_required()
-    @customer.marshal_list_with(Order_Dataset, code=200)
+    @customer_ns.marshal_list_with(Order_Dataset, code=200)
     def get(self):
         user_id = get_jwt_identity()
         # user = User.query.get(user_id) # JWT'den geliyor
@@ -74,10 +78,10 @@ class ListOrders(Resource):
         return ordersList
 
 
-@customer.route('/customer/order/add')
+@customer_ns.route('/order/add')
 class OrderAdd(Resource):
     @jwt_required()
-    @customer.marshal_with(Order_Menu, code=200, envelope='update_order')
+    @customer_ns.marshal_with(Order_Menu_Dataset, code=200, envelope='update_order')
     def post(self):
         user_id = get_jwt_identity()
         menu_id = 1
@@ -85,10 +89,10 @@ class OrderAdd(Resource):
         return user.id
 
 
-@customer.route('/customer/order/delete')
+@customer_ns.route('/order/delete')
 class OrderDelete(Resource):
     @jwt_required()
-    @customer.marshal_with(Response_Message)
+    @customer_ns.marshal_with(Response_Message)
     def post(self):
         user_id = get_jwt_identity()
         menu_id = 1  # Postmandan verilecek
@@ -112,10 +116,10 @@ class OrderDelete(Resource):
         return {"Message": "Order successfully deleted!"}, 200
 
 
-@customer.route('/customer/order/cancel')
+@customer_ns.route('/order/cancel')
 class OrderCancel(Resource):
     @jwt_required()
-    @customer.marshal_with(Response_Message)
+    @customer_ns.marshal_with(Response_Message)
     def post(self):
         user_id = get_jwt_identity()
         order = db.session.query(Order).filter(Order.user_id == user_id,
@@ -134,10 +138,10 @@ class OrderCancel(Resource):
         return {"Message": "Your order has been cancelled!"}, 200
 
 
-@customer.route('/customer/order/menu')
+@customer_ns.route('/order/menu')
 class OrderMenuOperations(Resource):
     @jwt_required()
-    @customer.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
+    @customer_ns.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
     def get(self):
         '''Returns how many menus have been ordered by the user'''
         user_id = get_jwt_identity()
@@ -149,7 +153,7 @@ class OrderMenuOperations(Resource):
         return menu_list
 
     @jwt_required()
-    @customer.marshal_with(Order_Menu_Dataset, code=201, envelope='order_menu')
+    @customer_ns.marshal_with(Order_Menu_Dataset, code=201, envelope='order_menu')
     def post(self):
         user_id = get_jwt_identity()
         json_data = request.get_json()
