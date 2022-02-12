@@ -14,7 +14,7 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     return token is not None
 
 
-@auth.route('/login')
+@auth_ns.route('/login')
 class AuthLogin(Resource):
     @auth_ns.doc(body=Login_Dataset,
                  responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
