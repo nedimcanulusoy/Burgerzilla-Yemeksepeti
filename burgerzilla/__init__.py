@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restx import Api
 from flask_migrate import Migrate
-from flask_user import UserManager
 
 from burgerzilla.config import Config
 from flask_jwt_extended import JWTManager
@@ -24,9 +23,6 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    from .models import User
-    user_manager = UserManager(app, db, User)
-
     from burgerzilla.routes.auth import auth
     from burgerzilla.routes.customer import customer
     from burgerzilla.routes.restaurant import restaurant
@@ -44,5 +40,6 @@ def create_app(config_class=Config):
     api.add_namespace(auth)
     api.add_namespace(customer_ns)
     api.add_namespace(restaurant_ns)
+    api.add_namespace(menu_ns)
 
     return app
