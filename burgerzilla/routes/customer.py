@@ -38,8 +38,9 @@ class OrderOperations(Resource):
 
             item_list.append(item)
 
-        return {"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
-                'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price}, 200
+        return marshal({"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
+                        'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price},
+                       Order_Detail_Dataset), 201
 
     @jwt_required()
     @customer_ns.doc(body=Restaurant_ID_Dataset, security="apiKey", params=auth_header,
@@ -129,14 +130,24 @@ class OrderCancel(Resource):
     def post(self):
         """Cancel order (which is order cart) based on order status"""
         user_id = get_jwt_identity()
-        order = db.session.query(Order).filter(Order.user_id == user_id,
-                                               Order.status == "NEW").first()  # kullancinin siparisi var mi (sepet/order)
+        json_data = request.json
+
+        order_id = json_data.get("order_id")
+
+
+        order = db.session.query(Order).get(order_id)
+
+
         order_exists = order is not None  # kullancinin siparisi var mi (sepet/order)
 
         if not order_exists:
-            return {"Message": "There is no available order!"}, 404
+            return {"Message": "This order can not be cancelled!"}, 422
 
-        order_id = order.id
+        if order.user_id != user_id:
+            return {"Message": "This order is not yours!"}, 401
+
+        if order.status != "NEW" and "PENDING":
+            return {"Message": "This order can not be cancelled at this status!"}, 422
 
         db.session.query(Order).filter_by(id=order_id).update(
             {'status': 'CANCELLED'})
