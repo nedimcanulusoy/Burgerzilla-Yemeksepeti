@@ -1,12 +1,10 @@
 from flask import request
-from burgerzilla import db, jwt, auth_header
+from burgerzilla import db, jwt
 from flask_restx import Resource
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, jwt_required
+from flask_jwt_extended import create_access_token, create_refresh_token
 from burgerzilla.api_models import JWT_Dataset, Response_Message, Login_Dataset
 from burgerzilla.models import User, TokenBlocklist
-from datetime import datetime, timezone
-
-from burgerzilla.routes.auth import auth
+from burgerzilla.routes import auth_ns
 
 
 @jwt.token_in_blocklist_loader
