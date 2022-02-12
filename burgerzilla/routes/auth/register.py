@@ -8,7 +8,7 @@ from burgerzilla.routes.auth import auth
 
 @auth.route('/register')
 class Register(Resource):
-    @auth.doc(body=User_Dataset, responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
+    @auth.doc(body=User_Dataset,responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
     @auth.marshal_with(Response_Message, code=201, envelope='user')
     def post(self):
         """User Register"""
@@ -35,7 +35,7 @@ class Register(Resource):
             new_restaurant = Restaurant(name=restaurant['name'])
             db.session.add(new_restaurant)
             db.session.commit()
-            
+
             restaurant_id = new_restaurant.id
 
         new_user = User(
@@ -51,7 +51,6 @@ class Register(Resource):
         if is_owner:
             role = Role.query.filter_by(name='Owner').first() or Role(name='Owner')
             new_user.roles.append(role)
-            
 
         db.session.add(new_user)
         db.session.commit()
