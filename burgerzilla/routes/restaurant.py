@@ -92,24 +92,22 @@ class RestaurantOrderDetail(Resource):
         user_id = get_jwt_identity()  # JWT den gelmis gibi sayiliyor
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
 
-        if order == None:
+        if order is None:
             return {"Error": "Your restaurant does not have any pending orders at the moment!"}, 404
-        else:
-            order_status = Order.query.filter_by(status='NEW', user_id=user_id).update({'status': 'PENDING'})
-            db.session.commit()
 
-            user = User.query.get(user_id)
+        order_status = Order.query.filter_by(status='NEW', user_id=user_id).update({'status': 'PENDING'})
+        db.session.commit()
 
-            menus = Order_Menu.query.filter_by(order_id=order.id)
-            item_list = []
-            price = 0
+        user = User.query.get(user_id)
 
-            for menu in menus:
-                item = Menu.query.get(menu.menu_id)  # menu item
+        menus = Order_Menu.query.filter_by(order_id=order.id)
+        item_list = []
+        price = 0
 
-                price += item.price  # menu price
-
-                item_list.append(item)
+        for menu in menus:
+            item = Menu.query.get(menu.menu_id)  # menu item
+            price += item.price  # menu price
+            item_list.append(item)
 
         return marshal(
             {"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
