@@ -23,9 +23,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    from burgerzilla.routes.auth import auth
-    from burgerzilla.routes.customer import customer
-    from burgerzilla.routes.restaurant import restaurant
+    from burgerzilla.routes import auth_ns, customer_ns, restaurant_ns, menu_ns
 
     authorizations = {
         'Bearer Auth': {
@@ -37,7 +35,7 @@ def create_app(config_class=Config):
     api.init_app(app, doc=True, title="Burgerzilla API", description="Burgerzilla Yemeksepeti API", version="1.0",
                  security='Bearer Auth', authorizations=authorizations)
 
-    api.add_namespace(auth)
+    api.add_namespace(auth_ns)
     api.add_namespace(customer_ns)
     api.add_namespace(restaurant_ns)
     api.add_namespace(menu_ns)
