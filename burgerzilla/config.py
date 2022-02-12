@@ -4,6 +4,7 @@ import secrets
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config(object):
     config_path = os.getcwd() + "/config.yml"
     file_exists = exists(config_path)
@@ -24,7 +25,6 @@ class Config(object):
         with open(config_path, 'w') as outfile:
             yaml.dump(data, outfile, default_flow_style=False)
 
-
     stream = open(config_path, 'r')
     config = yaml.load(stream, Loader=yaml.FullLoader)
 
@@ -32,8 +32,9 @@ class Config(object):
     SECRET_KEY = config["secret"]
     JWT_SECRET_KEY = config["secret"]
     SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{config["database"]["user"]}:' \
-                           f'{config["database"]["password"]}' \
-                           f'@{config["database"]["host"]}/{config["database"]["db"]}'
+                              f'{config["database"]["password"]}' \
+                              f'@{config["database"]["host"]}/{config["database"]["db"]}'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
+    # SWAGGER_UI_DOC_EXPANSION = "list"
