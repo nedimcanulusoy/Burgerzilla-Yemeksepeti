@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_user import UserMixin
 
 
+# Define the User table
 class User(db.Model, UserMixin):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'user'
@@ -36,7 +37,7 @@ class User(db.Model, UserMixin):
             self.address, self.restaurant_id)
 
 
-# Define the Role data-model
+# Define the Role table
 class Role(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'roles'
@@ -53,6 +54,7 @@ class UserRoles(db.Model):
     role_id = db.Column(db.Integer(), db.ForeignKey('bzschema.roles.id', ondelete='CASCADE'))
 
 
+# Define the Restaurant table
 class Restaurant(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'restaurant'
@@ -66,6 +68,7 @@ class Restaurant(db.Model):
         return "<Restaurant(id={}, name={})>".format(self.id, self.name)
 
 
+# Define the Menu table
 class Menu(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'menu'
@@ -85,6 +88,7 @@ class Menu(db.Model):
                                                                                              self.restaurant_id)
 
 
+# Define the Order table
 class Order(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'order'
@@ -99,6 +103,7 @@ class Order(db.Model):
         return "<Order(status={}, user_id={})>".format(self.status, self.user_id)
 
 
+# Define the Order_Menu association table
 class Order_Menu(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'order_menu'
@@ -110,6 +115,7 @@ class Order_Menu(db.Model):
         return "<Order_Menu(id={},order_id={},menu_id={})>".format(self.id, self.order_id, self.menu_id)
 
 
+# Define the TokenBlocklist table
 class TokenBlocklist(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'token_block_list'
