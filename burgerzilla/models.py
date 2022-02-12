@@ -35,12 +35,14 @@ class User(db.Model, UserMixin):
             self.name, self.surname, self.username, self.email,
             self.address, self.restaurant_id)
 
+
 # Define the Role data-model
 class Role(db.Model):
     __table_args__ = {"schema": "bzschema"}
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
+
 
 # Define the UserRoles association table
 class UserRoles(db.Model):
@@ -49,6 +51,7 @@ class UserRoles(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('bzschema.user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('bzschema.roles.id', ondelete='CASCADE'))
+
 
 class Restaurant(db.Model):
     __table_args__ = {"schema": "bzschema"}
@@ -75,11 +78,11 @@ class Menu(db.Model):
     menuid = db.relationship('Order_Menu', backref='menuid', lazy='dynamic')
 
     def __repr__(self):
-        return "<Menu(product={}, price={}, description={}, image={}, restaurant_menu={})>".format(self.product,
-                                                                                                   self.price,
-                                                                                                   self.description,
-                                                                                                   self.image,
-                                                                                                   self.restaurant_menu)
+        return "<Menu(name={}, price={}, description={}, image={}, restaurant_id={}>".format(self.name,
+                                                                                             self.price,
+                                                                                             self.description,
+                                                                                             self.image,
+                                                                                             self.restaurant_id)
 
 
 class Order(db.Model):
@@ -105,6 +108,7 @@ class Order_Menu(db.Model):
 
     def __repr__(self):
         return "<Order_Menu(id={},order_id={},menu_id={})>".format(self.id, self.order_id, self.menu_id)
+
 
 class TokenBlocklist(db.Model):
     __table_args__ = {"schema": "bzschema"}
