@@ -13,8 +13,7 @@ class AuthLogout(Resource):
     @jwt_required()
     @auth_ns.marshal_with(Response_Message)
     @auth_ns.doc(security="apiKey", params={**auth_header},
-                 responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
-                            404: "Token Not Found"})
+                 responses={201: "Success", 400: "Validation Error", 403: "Invalid Credentials"})
     def post(self):
         """User Logout"""
         try:
@@ -26,7 +25,7 @@ class AuthLogout(Resource):
 
             auth_ns.logger.info('User successfully logged out and JWT revoked at AuthLogout!')
 
-            return {"Message": "Logged out and JWT revoked"}
+            return {"Message": "Logged out and JWT revoked"}, 201
 
         except Exception as e:
             auth_ns.logger.debug("An error occurred while logging out at AuthLogout!")

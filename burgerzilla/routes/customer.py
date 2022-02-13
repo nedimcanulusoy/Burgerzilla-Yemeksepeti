@@ -104,7 +104,7 @@ class ListOrders(Resource):
                 ordersList.append(order)
 
             customer_ns.logger.info('POST request was `successful` at ListOrders')
-            return ordersList
+            return ordersList, 200
 
         except Exception as e:
             customer_ns.logger.debug('GET request was `unsuccessful` at ListOrders')
@@ -115,7 +115,7 @@ class ListOrders(Resource):
 class OrderDelete(Resource):
     @jwt_required()
     @customer_ns.doc(body=Order_ID_Dataset, security="apiKey", params=auth_header,
-                     responses={200: "Success", 404: "Order Not Found"})
+                     responses={200: "Success", 404: "Order Not Found", 401:"Unauthorized", 422:"Unprocessable Entity"})
     @customer_ns.marshal_with(Response_Message)
     def post(self):
         """Delete order (which is order cart) based on its status"""
@@ -154,7 +154,7 @@ class OrderDelete(Resource):
 class OrderCancel(Resource):
     @jwt_required()
     @customer_ns.doc(body=Order_ID_Dataset, security="apiKey", params=auth_header,
-                     responses={200: "Success", 404: "Order Not Found"})
+                     responses={200: "Success", 404: "Order Not Found", 401:"Unauthorized", 422:"Unprocessable Entity"})
     @customer_ns.marshal_with(Response_Message)
     def post(self):
         """Cancel order (which is order cart) based on order status"""
@@ -193,7 +193,7 @@ class OrderCancel(Resource):
 class OrderMenuOperations(Resource):
     @jwt_required()
     @customer_ns.doc(security="apiKey", params=auth_header,
-                     responses={200: "Success", 404: "Order Not Found"})
+                     responses={200: "Success", 404: "Not Found"})
     @customer_ns.marshal_list_with(Order_Menu_ID_Dataset, code=200, envelope='order_menu')
     def get(self):
         '''Returns how many menus have been ordered by the user'''
@@ -206,7 +206,7 @@ class OrderMenuOperations(Resource):
         try:
             if not order_exists:
                 customer_ns.logger.info('Order not exists: at OrderMenuOperations')
-                return {"Message": "You do not have any order!"}, 422
+                return {"Message": "You do not have any order!"}, 404
 
             menus = Order_Menu.query.filter_by(order_id=order.id)
             menu_list = []
@@ -214,7 +214,7 @@ class OrderMenuOperations(Resource):
                 menu_list.append(each)
 
             customer_ns.logger.info('GET request was `successful` at OrderMenuOperations')
-            return menu_list
+            return menu_list, 200
 
         except Exception as e:
             customer_ns.logger.debug('GET request was `unsuccessful` at OrderMenuOperations')
@@ -222,7 +222,7 @@ class OrderMenuOperations(Resource):
 
     @jwt_required()
     @customer_ns.doc(body=Order_Menu_ID_Dataset, security="apiKey", params=auth_header,
-                     responses={200: "Success", 404: "Order Not Found"})
+                     responses={200: "Success", 404: "Not Found"})
     @customer_ns.marshal_with(Response_Message, code=201, envelope='order_menu')
     def post(self):
         '''Add menu to order of the user'''
@@ -237,7 +237,7 @@ class OrderMenuOperations(Resource):
             db.session.add(add_menu)
             db.session.commit()
             customer_ns.logger.info('POST request was `successful` at OrderMenuOperations')
-            return {'Message': "Menu successfully added to your order!"}
+            return {'Message': "Menu successfully added to your order!"}, 201
         except:
             customer_ns.logger.debug('POST request was `unsuccessful` at OrderMenuOperations')
             return {'Message': "Unfortunately the menu could not be added to your order, try again!"}

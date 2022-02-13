@@ -30,7 +30,7 @@ class Register(Resource):
 
             if username_exists or email_exists:
                 auth_ns.logger.info("Taken username or email was attempted during registration at Register!")
-                return {"Message": "This username or email is already taken, try another one!"}
+                return {"Message": "This username or email is already taken, try another one!"}, 400
 
             if not is_owner:
                 restaurant_id = None
@@ -59,7 +59,7 @@ class Register(Resource):
             db.session.add(new_user)
             db.session.commit()
             auth_ns.logger.info("User successfully registered at Register!")
-            return {"Message": "User successfully registered!"}
+            return {"Message": "User successfully registered!"}, 200
 
         except Exception as e:
             auth_ns.logger.debug("An error occurred while registering at Register!")

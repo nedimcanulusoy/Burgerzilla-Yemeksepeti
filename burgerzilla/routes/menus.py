@@ -14,7 +14,7 @@ class MenuOperations(Resource):
         try:
             all_menus = Menu.query.all()
             menu_ns.logger.debug('GET request was `successful` at MenuOperations')
-            return all_menus
+            return all_menus, 200
 
         except Exception as e:
             menu_ns.logger.debug('GET request was `unsuccessful` at MenuOperations')

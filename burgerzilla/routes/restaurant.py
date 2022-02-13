@@ -12,7 +12,7 @@ from burgerzilla.routes.utils import owner_required
 
 @restaurant_ns.route('/')
 @restaurant_ns.doc(
-    responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
+    responses={200: "Success", 404: "Not Found"})
 class RestaurantOperations(Resource):
     @restaurant_ns.marshal_list_with(Restaurant_Dataset, code=200, envelope='restaurants')
     def get(self):
@@ -38,7 +38,7 @@ class MenuOperations(Resource):
     @jwt_required()
     @restaurant_ns.doc(body=Menu_Dataset, params=auth_header,
                        responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
-                                  404: "User Not Found"})
+                                  404: "Not Found"})
     @restaurant_ns.marshal_with(Menu_Dataset, code=201, envelope='menu')
     @owner_required()
     def post(self):
@@ -65,7 +65,7 @@ class MenuOperations(Resource):
 @restaurant_ns.route('/<int:id>/menu')
 class GetRestaurantMenu(Resource):
     @restaurant_ns.doc(
-        responses={201: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
+        responses={201: "Success", 404: "Menu Not Found"})
     @restaurant_ns.marshal_list_with(Menu_Dataset, code=201, envelope='menus')
     def get(self, id):
         """Returns the menu according to the ID of the restaurant"""
@@ -82,7 +82,7 @@ class GetRestaurantMenu(Resource):
 class RestaurantOrder(Resource):
     @jwt_required()
     @owner_required()
-    @restaurant_ns.doc(params=auth_header)
+    @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_list_with(Order_Menu_Dataset, envelope='restaurant_order_item')
     def get(self):
         '''Returns which menu order was taken'''
@@ -108,11 +108,11 @@ class RestaurantOrder(Resource):
 class RestaurantOrderDetail(Resource):
     @jwt_required()
     @owner_required()
-    @restaurant_ns.doc(params=auth_header)
+    @restaurant_ns.doc(params=auth_header, responses={201: "Success", 404: "Not Found"})
     @restaurant_ns.response(model=Restaurant_Order_Dataset, code=201, description='restaurant_order_item_detail')
     def get(self):
         '''Returns order details of the user to the Restaurant'''
-        user_id = get_jwt_identity()  # JWT den gelmis gibi sayiliyor
+        user_id = get_jwt_identity()
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
 
         try:
@@ -149,7 +149,7 @@ class RestaurantOrderDetail(Resource):
 class OrderCancel(Resource):
     @jwt_required()
     @owner_required()
-    @restaurant_ns.doc(params=auth_header)
+    @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
     def post(self):
         """Cancel user's order by restaurant"""
@@ -167,7 +167,7 @@ class OrderCancel(Resource):
             db.session.commit()
 
             restaurant_ns.logger.debug('POST request was `successful` at OrderCancel')
-            return {"Message": "DELETED!"}, 200
+            return {"Message": "Your order has been deleted!"}, 200
 
 
         except Exception as e:
