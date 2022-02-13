@@ -1,16 +1,16 @@
 from flask import request
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from burgerzilla import db, auth_header
+from flask_jwt_extended import jwt_required
 from flask_restx import Resource, marshal
-from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Order_Menu_Dataset,
-                                    Restaurant_Order_Dataset, Response_Message)
-from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
 
+from burgerzilla import db, auth_header
+from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Restaurant_Order_Dataset, Response_Message,
+                                    Order_Dataset)
+from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
 from burgerzilla.routes import restaurant_ns
 from burgerzilla.routes.utils import owner_required
 
 
-@restaurant_ns.route('/')
+@restaurant_ns.route('')
 @restaurant_ns.doc(
     responses={200: "Success", 404: "Not Found"})
 class RestaurantOperations(Resource):
@@ -26,15 +26,9 @@ class RestaurantOperations(Resource):
             restaurant_ns.logger.debug('GET request was `unsuccessful` at RestaurantOperations')
             return {"Message": f"An error occurred! {e}"}
 
+
 @restaurant_ns.route('/menu')
 class MenuOperations(Resource):
-    # @restaurant_ns.doc(
-    #     responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials", 404: "User Not Found"})
-    # @restaurant_ns.marshal_list_with(Menu_Dataset, code=200, envelope='menus')
-    # def get(self):
-    #     all_menus = Menu.query.all()
-    #     return all_menus
-
     @jwt_required()
     @restaurant_ns.doc(body=Menu_Dataset, params=auth_header,
                        responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
@@ -78,98 +72,91 @@ class GetRestaurantMenu(Resource):
             restaurant_ns.logger.debug('GET request was `unsuccessful` at GetRestaurantMenu')
             return {"Message": f"An error occurred! {e}"}
 
-@restaurant_ns.route('/order')
+
+@restaurant_ns.route('/<int:id>/orders')
 class RestaurantOrder(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
-    @restaurant_ns.marshal_list_with(Order_Menu_Dataset, envelope='restaurant_order_item')
-    def get(self):
+    @restaurant_ns.marshal_list_with(Order_Dataset)
+    def get(self, id):
         '''Returns which menu order was taken'''
-        user_id = get_jwt_identity()
 
         try:
-            user = User.query.get(user_id)
-            order = Order.query.filter_by(user_id=user.id).first()
-            menus = Order_Menu.query.filter_by(order_id=order.id)
-
-            item_list = []
-            for each in menus:
-                item_list.append(each)
+            orders = db.session.query(Order).filter(Order.restaurant_id == id, Order.status != "NEW").all()
 
             restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrder')
-            return item_list
+
+            return orders, 200
 
         except Exception as e:
             restaurant_ns.logger.debug('GET request was `unsuccessful` at RestaurantOrder')
             return {"Message": f"An error occurred! {e}"}
 
-@restaurant_ns.route('/order/detail')
+
+@restaurant_ns.route('/order/<int:id>/detail')
 class RestaurantOrderDetail(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={201: "Success", 404: "Not Found"})
     @restaurant_ns.response(model=Restaurant_Order_Dataset, code=201, description='restaurant_order_item_detail')
-    def get(self):
+    def get(self, id):
         '''Returns order details of the user to the Restaurant'''
-        user_id = get_jwt_identity()
-        order = Order.query.filter_by(status='NEW', user_id=user_id).first()
+        order = db.session.query(Order).filter(Order.status != 'NEW', Order.id == id).first()
+        order_exists = order is not None
 
-        try:
-            if order is None:
-                restaurant_ns.logger.info('No valid order: at RestaurantOrderDetail')
-                return {"Error": "Your restaurant does not have any pending orders at the moment!"}, 404
+        if not order_exists:
+            restaurant_ns.logger.info('No valid order: at RestaurantOrderDetail')
 
-            order_status = Order.query.filter_by(status='NEW', user_id=user_id).update({'status': 'PENDING'})
-            db.session.commit()
+            return {"Error": "This order is not available at the moment!"}, 404
 
-            user = User.query.get(user_id)
+        user = User.query.get(order.user_id)
 
-            menus = Order_Menu.query.filter_by(order_id=order.id)
-            item_list = []
-            price = 0
+        order_menus = db.session.query(Order_Menu).filter(Order_Menu.order_id == order.id).all()
+        menus = []
+        price = 0
 
-            for menu in menus:
-                item = Menu.query.get(menu.menu_id)  # menu item
-                price += item.price  # menu price
-                item_list.append(item)
+        for order_menu in order_menus:
+            item = Menu.query.get(order_menu.menu_id)  # menu item
+            price += item.price  # menu price
 
-            restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrderDetail')
-            return marshal(
-                {"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
-                 'status': order_status,
-                 'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price},
-                Restaurant_Order_Dataset), 201
+            menus.append(item)
 
-        except Exception as e:
-            restaurant_ns.logger.debug('GET request was `unsuccessful` at RestaurantOrderDetail')
-            return {"Message": f"An error occurred! {e}"}
+        restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrderDetail')
 
-@restaurant_ns.route('/order/cancel')
+        return marshal({
+            "name": user.name,
+            'address': user.address,
+            'timestamp': order.timestamp,
+            'user_id': user.id,
+            'status': order.status,
+            'restaurant_id': order.restaurant_id,
+            "menus": menus,
+            'sum_price': price
+        }, Restaurant_Order_Dataset), 201
+
+
+@restaurant_ns.route('/order/<int:id>/cancel')
 class OrderCancel(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
-    def post(self):
+    def post(self, id):
         """Cancel user's order by restaurant"""
-        order_id = get_jwt_identity()  # postmandan gelecek
-        order_id_exists = db.session.query(Order).filter(Order.id == order_id, Order.status != "NEW",
-                                                         Order.status != "CANCELLED").first() is not None  # kullancinin siparisi var mi (sepet/order)
+        order = db.session.query(Order).filter(Order.id == id,
+                                               Order.status == "PENDING" and "PREPARING" and "ON_THE_WAY").first()  # kullancinin siparisi var mi (sepet/order)
+        order_exists = order is not None
 
-        try:
-            if not order_id_exists:
-                restaurant_ns.logger.info('No valid order: at OrderCancel')
-                return {"Message": "There is no available order!"}, 404
+        if not order_exists:
+            restaurant_ns.logger.info('No valid order: at OrderCancel')
+            return {"Message": "This order is not available to cancel!"}, 403
 
-            db.session.query(Order).filter_by(id=order_id).update(
-                {'status': 'CANCELLED'})  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
-            db.session.commit()
+        db.session.query(Order).filter_by(id=id).update(
+            {
+                'status': 'RESTAURANT_CANCELLED'})  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
+        db.session.commit()
 
-            restaurant_ns.logger.debug('POST request was `successful` at OrderCancel')
-            return {"Message": "Your order has been deleted!"}, 200
+        restaurant_ns.logger.debug('POST request was `successful` at OrderCancel')
 
-
-        except Exception as e:
-            restaurant_ns.logger.debug('POST request was `unsuccessful` at OrderCancel')
-            return {"Message": f"An error occurred! {e}"}
+        return {"Message": "This order has been cancelled!"}, 200
