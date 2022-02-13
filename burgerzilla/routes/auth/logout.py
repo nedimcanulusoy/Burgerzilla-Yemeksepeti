@@ -17,10 +17,17 @@ class AuthLogout(Resource):
                             404: "Token Not Found"})
     def post(self):
         """User Logout"""
-        jti = get_jwt()["jti"]
-        now = datetime.now(timezone.utc)
+        try:
+            jti = get_jwt()["jti"]
+            now = datetime.now(timezone.utc)
 
-        db.session.add(TokenBlocklist(jti=jti, created_at=now))
-        db.session.commit()
+            db.session.add(TokenBlocklist(jti=jti, created_at=now))
+            db.session.commit()
 
-        return {"Message": "Logged out and JWT revoked"}
+            auth_ns.logger.info('User successfully logged out and JWT revoked at AuthLogout!')
+
+            return {"Message": "Logged out and JWT revoked"}
+
+        except Exception as e:
+            auth_ns.logger.debug("An error occurred while logging out at AuthLogout!")
+            return {"Message": f"An error occurred! {e}"}
