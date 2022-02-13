@@ -11,5 +11,11 @@ class MenuOperations(Resource):
     @menu_ns.marshal_list_with(Menu_Dataset, code=200, envelope='menus')
     def get(self):
         """Return all menus of all restaurants"""
-        all_menus = Menu.query.all()
-        return all_menus
+        try:
+            all_menus = Menu.query.all()
+            menu_ns.logger.debug('GET request was `successful` at MenuOperations')
+            return all_menus
+
+        except Exception as e:
+            menu_ns.logger.debug('GET request was `unsuccessful` at MenuOperations')
+            return {"Message": f"An error occurred! {e}"}
