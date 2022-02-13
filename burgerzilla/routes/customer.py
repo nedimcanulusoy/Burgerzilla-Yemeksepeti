@@ -7,6 +7,7 @@ from burgerzilla.api_models import (Order_Dataset, Order_Menu_ID_Dataset,
                                     New_Order_Dataset, Order_Detail_Dataset, Response_Message, Restaurant_ID_Dataset,
                                     Order_ID_Dataset)
 from burgerzilla.models import User, Menu, Order, Order_Menu
+from burgerzilla.order_status import OrderStatus
 from burgerzilla.routes import customer_ns
 
 
@@ -21,7 +22,7 @@ class OrderOperations(Resource):
         """Returns details of current order basket if exists"""
 
         user_id = get_jwt_identity()
-        order = Order.query.filter_by(status='NEW', user_id=user_id).first()
+        order = Order.query.filter_by(status=OrderStatus.NEW, user_id=user_id).first()
         order_exists = order is not None
 
         if not order_exists:
@@ -66,14 +67,14 @@ class OrderOperations(Resource):
         restaurant_id = json_data.get('restaurant_id')
 
         order = db.session.query(Order).filter(Order.user_id == user_id,
-                                               Order.status == "NEW").first()
+                                               Order.status == OrderStatus.NEW).first()
         order_exists = order is not None
 
         if order_exists:
             customer_ns.logger.info('Valid active order: at OrderOperations')
             return {"Message": "You already have an active order basket!"}, 422
 
-        new_order = Order(status="NEW", restaurant_id=restaurant_id,
+        new_order = Order(status=OrderStatus.NEW, restaurant_id=restaurant_id,
                           user_id=user_id)
 
         db.session.add(new_order)
@@ -97,7 +98,7 @@ class ListOrders(Resource):
     def get(self):
         """Returns order history of customer"""
         user_id = get_jwt_identity()
-        orders = db.session.query(Order).filter(Order.user_id == user_id, Order.status != "DELETED").all()
+        orders = db.session.query(Order).filter(Order.user_id == user_id, Order.status != OrderStatus.DELETED).all()
 
         customer_ns.logger.info('POST request was `successful` at ListOrders')
 
@@ -129,11 +130,11 @@ class OrderDelete(Resource):
             customer_ns.logger.info('Order access attempt by unauthorized user OrderDelete')
             return {"Message": "This order is not yours!"}, 401
 
-        if order.status != "NEW" and "PENDING" and "DONE":
+        if order.status != OrderStatus.NEW and OrderStatus.PENDING and OrderStatus.DONE:
             customer_ns.logger.info('Attempt to delete unavailable order status OrderDelete')
             return {"Message": "This order can not be deleted at this status!"}, 422
 
-        db.session.query(Order).filter_by(id=order_id).update({'status': 'DELETED'})
+        db.session.query(Order).filter_by(id=order_id).update({'status': OrderStatus.DELETED})
         db.session.commit()
 
         customer_ns.logger.info('Successful deletion: at OrderDelete')
@@ -165,11 +166,11 @@ class OrderCancel(Resource):
             customer_ns.logger.info('Order access attempt by unauthorized user OrderCancel')
             return {"Message": "This order is not yours!"}, 401
 
-        if order.status != "NEW" and "PENDING":
+        if order.status != OrderStatus.NEW and OrderStatus.PENDING:
             customer_ns.logger.info('Attempt to delete unavailable order status OrderCancel')
             return {"Message": "This order can not be cancelled at this status!"}, 422
 
-        db.session.query(Order).filter_by(id=order_id).update({'status': 'CUSTOMER_CANCELLED'})
+        db.session.query(Order).filter_by(id=order_id).update({'status': OrderStatus.CUSTOMER_CANCELLED})
         db.session.commit()
 
         customer_ns.logger.info('Successful cancellation: at OrderCancel')
@@ -189,7 +190,7 @@ class OrderMenuOperations(Resource):
         json_data = request.get_json()
         menu_id = json_data.get('menu_id')
 
-        order = db.session.query(Order).filter_by(user_id=user_id, status="NEW").first()
+        order = db.session.query(Order).filter_by(user_id=user_id, status=OrderStatus.NEW).first()
         order_exists = order is not None
 
         if not order_exists:
@@ -223,7 +224,7 @@ class RemoveOrderMenuFromOrder(Resource):
         json_data = request.get_json()
         menu_id = json_data.get('menu_id')
 
-        order = db.session.query(Order).filter_by(user_id=user_id, status="NEW").first()
+        order = db.session.query(Order).filter_by(user_id=user_id, status=OrderStatus.NEW).first()
         order_exists = order is not None
 
         if not order_exists:
