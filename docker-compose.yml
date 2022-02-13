@@ -8,8 +8,9 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: bzdata
+    volumes:
+      - .postgres_data_dev:/var/lib/postgresql/data/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
-    
-    
-    

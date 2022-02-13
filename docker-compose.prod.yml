@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    env_file:
+      - .env.prod
+    links:
+      - "db"
+    depends_on:
+      - "db"
+    ports:
+      - "5000:5000"
+    environment:
+      - WAIT_HOSTS=db:5432
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+
+  db:
+    image: postgres
+    container_name: docker_burgerzilla
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: bzdata
+    volumes:
+      - .postgres_data_prod:/var/lib/postgresql/data/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
