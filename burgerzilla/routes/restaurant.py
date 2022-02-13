@@ -35,6 +35,30 @@ class MenuOperations(Resource):
         return new_menu
 
 
+@restaurant_ns.route('/menu/<int:menu_id>')
+class GetMenuDetail(Resource):
+    @jwt_required()
+    @owner_required()
+    @validate_owner_restaurant()
+    @restaurant_ns.doc(security="apiKey", params=auth_header,
+                       responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
+                                  404: "Not Found"})
+    @restaurant_ns.marshal_with(Menu_Dataset, code=201, envelope='menu')
+    def get(self, restaurant_id, menu_id):
+        """Returns detail of specified menu"""
+
+        menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
+        menu_exists = menu is not None
+
+        if not menu_exists:
+            return {"Message": "This menu is not exists!"}, 404
+
+        if menu.restaurant_id != restaurant_id:
+            return {"Message": "This menu is not yours!"}, 403
+
+        return menu
+
+
 @restaurant_ns.route('/menus')
 class GetRestaurantMenu(Resource):
     @restaurant_ns.doc(responses={201: "Success", 404: "Menu Not Found"})
