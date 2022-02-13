@@ -1,8 +1,8 @@
 from functools import wraps
-from flask import jsonify
+
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
-from burgerzilla.models import UserRoles, Role
+from burgerzilla.models import UserRoles, Role, User
 
 '''
 A decorator on the restaurant side to restrict unauthorized actions by other non-owners users
@@ -29,7 +29,28 @@ def owner_required():
             if is_owner:
                 return fn(*args, **kwargs)
 
-            return jsonify(msg="Owner only!"), 403
+            return {"Message": "Owner only!"}, 403
+
+        return decorator
+
+    return wrapper
+
+
+def validate_owner_restaurant():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            user_id = get_jwt_identity()  # Get user id from JWT
+
+            # Get user from user table
+            user = User.query.get(user_id)
+
+            # Check if this user matches with its restaurant
+            if user.restaurant_id == kwargs.get("restaurant_id"):
+                return fn(*args, **kwargs)
+
+            return {"Message": "You don't have access to this restaurant!"}, 403
 
         return decorator
 
