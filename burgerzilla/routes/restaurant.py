@@ -58,6 +58,42 @@ class GetMenuDetail(Resource):
 
         return menu
 
+    @jwt_required()
+    @owner_required()
+    @validate_owner_restaurant()
+    @restaurant_ns.doc(body=Menu_Dataset, security="apiKey", params=auth_header,
+                       responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
+                                  404: "Not Found"})
+    def put(self, restaurant_id, menu_id):
+        """Update the specified menu"""
+        json_data = request.get_json()
+        name = json_data.get("name")
+        price = json_data.get("price")
+        description = json_data.get("description")
+        image = json_data.get("image")
+
+        menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
+        menu_exists = menu is not None
+
+        if not menu_exists:
+            return {"Message": "This menu is not exists!"}, 404
+
+        if menu.restaurant_id != restaurant_id:
+            return {"Message": "This menu is not yours!"}, 403
+
+        if name is not None:
+            menu.name = name
+        if price is not None:
+            menu.price = price
+        if description is not None:
+            menu.description = description
+        if image is not None:
+            menu.image = image
+
+        db.session.commit()
+
+        return {"Message": "Menu successfully updated!"}, 200
+
 
 @restaurant_ns.route('/menus')
 class GetRestaurantMenu(Resource):
