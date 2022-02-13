@@ -1,4 +1,6 @@
-import os, yaml, secrets
+import os
+import secrets
+import yaml
 from os.path import exists
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -13,11 +15,11 @@ class Config(object):
             secret=secrets.token_hex(32),
 
             database=dict(
-                user='fill-here-with-your-data',
-                db='fill-here-with-your-data',
-                password='fill-here-with-your-data',
-                host='fill-here-with-your-data',
-                port='fill-here-with-your-data',
+                user='postgres',
+                db='bzdata',
+                password='example',
+                host='db',
+                port='5432',
             )
         )
 
