@@ -101,6 +101,7 @@ class GetMenuDetail(Resource):
                        responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
                                   404: "Not Found"})
     def delete(self, restaurant_id, menu_id):
+        """Delete existing menu from restaurant"""
         menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
         menu_exists = menu is not None
 
@@ -229,6 +230,7 @@ class UpdateOrderStatus(Resource):
                        responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
     def put(self, restaurant_id, order_id):
+        """Updates the status of the order by the restaurant"""
         json_data = request.get_json()
         status = json_data.get("status")
 
