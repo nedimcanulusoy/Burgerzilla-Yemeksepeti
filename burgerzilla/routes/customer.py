@@ -1,12 +1,12 @@
 from flask import request
-from burgerzilla import db, auth_header
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Resource, marshal
+
+from burgerzilla import db, auth_header
 from burgerzilla.api_models import (Order_Dataset, Order_Menu_ID_Dataset,
                                     New_Order_Dataset, Order_Detail_Dataset, Response_Message, Restaurant_ID_Dataset,
                                     Order_ID_Dataset)
 from burgerzilla.models import User, Menu, Order, Order_Menu
-from flask_jwt_extended import jwt_required, get_jwt_identity
-
 from burgerzilla.routes import customer_ns
 
 
@@ -178,7 +178,7 @@ class OrderCancel(Resource):
                 customer_ns.logger.info('Attempt to delete unavailable order status OrderCancel')
                 return {"Message": "This order can not be cancelled at this status!"}, 422
 
-            db.session.query(Order).filter_by(id=order_id).update({'status': 'CANCELLED'})
+            db.session.query(Order).filter_by(id=order_id).update({'status': 'CUSTOMER_CANCELLED'})
             db.session.commit()
 
             customer_ns.logger.info('Successful cancellation: at OrderCancel')
