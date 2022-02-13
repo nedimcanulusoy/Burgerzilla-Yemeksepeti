@@ -3,7 +3,11 @@ from flask_restx import fields
 from burgerzilla import api
 from burgerzilla.routes import customer_ns, restaurant_ns, auth_ns
 
-Restaurant_Dataset = restaurant_ns.model('Restaurant', {
+Restaurant_Dataset = restaurant_ns.model('Restaurant Name', {
+    'name': fields.String()
+})
+
+Restaurant_ID_Name_Dataset = restaurant_ns.model('Restaurant', {
     'id': fields.Integer(),
     'name': fields.String()
 })
@@ -24,6 +28,7 @@ Restaurant_ID_Dataset = restaurant_ns.model('Restaurant ID', {
 })
 
 Menu_Dataset = restaurant_ns.model('Menu', {
+    'id': fields.Integer(),
     'name': fields.String(),
     'price': fields.Integer(),
     'description': fields.String(),
@@ -32,6 +37,7 @@ Menu_Dataset = restaurant_ns.model('Menu', {
 })
 
 Order_Detail_Dataset = customer_ns.model('OrderDetail', {
+    "id": fields.Integer(),
     'name': fields.String(),
     'address': fields.String(),
     'status': fields.String(default='NEW'),
