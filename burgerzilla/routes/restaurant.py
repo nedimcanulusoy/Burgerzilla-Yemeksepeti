@@ -14,7 +14,7 @@ from burgerzilla.routes.utils import owner_required, validate_owner_restaurant
 @restaurant_ns.route('/menu')
 class MenuOperations(Resource):
     @jwt_required()
-    @restaurant_ns.doc(body=Menu_Dataset, params=auth_header,
+    @restaurant_ns.doc(body=Menu_Dataset, security="apiKey", params=auth_header,
                        responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
                                   404: "Not Found"})
     @restaurant_ns.marshal_with(Menu_Dataset, code=201, envelope='menu')
@@ -37,8 +37,7 @@ class MenuOperations(Resource):
 
 @restaurant_ns.route('/menus')
 class GetRestaurantMenu(Resource):
-    @restaurant_ns.doc(
-        responses={201: "Success", 404: "Menu Not Found"})
+    @restaurant_ns.doc(responses={201: "Success", 404: "Menu Not Found"})
     @restaurant_ns.marshal_list_with(Menu_Dataset, code=201, envelope='menus')
     def get(self, restaurant_id):
         """Returns the menu according to the ID of the restaurant"""
@@ -52,7 +51,7 @@ class RestaurantOrder(Resource):
     @jwt_required()
     @owner_required()
     @validate_owner_restaurant()
-    @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
+    @restaurant_ns.doc(security="apiKey", params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_list_with(Order_Dataset)
     def get(self, restaurant_id):
         """Returns which menu order was taken"""
@@ -69,7 +68,7 @@ class RestaurantOrderDetail(Resource):
     @jwt_required()
     @owner_required()
     @validate_owner_restaurant()
-    @restaurant_ns.doc(params=auth_header, responses={201: "Success", 404: "Not Found"})
+    @restaurant_ns.doc(security="apiKey", params=auth_header, responses={201: "Success", 404: "Not Found"})
     @restaurant_ns.response(model=Restaurant_Order_Dataset, code=201, description='restaurant_order_item_detail')
     def get(self, restaurant_id, order_id):
         """Returns order details of the user to the Restaurant"""
@@ -112,7 +111,7 @@ class OrderCancel(Resource):
     @jwt_required()
     @owner_required()
     @validate_owner_restaurant()
-    @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
+    @restaurant_ns.doc(security="apiKey", params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
     def post(self, restaurant_id, order_id):
         """Cancel user's order by restaurant"""
@@ -140,7 +139,8 @@ class UpdateOrderStatus(Resource):
     @jwt_required()
     @owner_required()
     @validate_owner_restaurant()
-    @restaurant_ns.doc(body=Update_Order_Status, params=auth_header, responses={200: "Success", 404: "Not Found"})
+    @restaurant_ns.doc(security="apiKey", body=Update_Order_Status, params=auth_header,
+                       responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
     def put(self, restaurant_id, order_id):
         json_data = request.get_json()
