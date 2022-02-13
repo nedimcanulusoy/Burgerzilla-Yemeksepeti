@@ -3,24 +3,11 @@ from flask_jwt_extended import jwt_required
 from flask_restx import Resource, marshal
 
 from burgerzilla import db, auth_header
-from burgerzilla.api_models import (Restaurant_Dataset, Menu_Dataset, Restaurant_Order_Dataset, Response_Message,
+from burgerzilla.api_models import (Menu_Dataset, Restaurant_Order_Dataset, Response_Message,
                                     Order_Dataset)
-from burgerzilla.models import User, Restaurant, Menu, Order, Order_Menu
+from burgerzilla.models import User, Menu, Order, Order_Menu
 from burgerzilla.routes import restaurant_ns
 from burgerzilla.routes.utils import owner_required
-
-
-@restaurant_ns.route('')
-@restaurant_ns.doc(
-    responses={200: "Success", 404: "Not Found"})
-class RestaurantOperations(Resource):
-    @restaurant_ns.marshal_list_with(Restaurant_Dataset, code=200, envelope='restaurants')
-    def get(self):
-        """Returns all restaurants"""
-        all_restaurants = Restaurant.query.all()
-        restaurant_ns.logger.debug('GET request was `successful` at RestaurantOperations')
-        return all_restaurants
-
 
 
 @restaurant_ns.route('/menu')
