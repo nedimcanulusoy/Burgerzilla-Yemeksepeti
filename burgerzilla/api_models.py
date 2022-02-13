@@ -48,7 +48,6 @@ Order_Dataset = api.model('Order', {
     'user_id': fields.Integer(),
 })
 
-# New order data set
 New_Order_Dataset = customer_ns.model('Order', {
     'status': fields.String(default='NEW'),
     'restaurant_id': fields.Integer(),
