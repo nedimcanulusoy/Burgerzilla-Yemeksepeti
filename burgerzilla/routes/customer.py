@@ -9,11 +9,13 @@ from burgerzilla.api_models import (Order_Dataset, Order_Menu_ID_Dataset,
 from burgerzilla.models import User, Menu, Order, Order_Menu
 from burgerzilla.order_status import OrderStatus
 from burgerzilla.routes import customer_ns
+from burgerzilla.routes.utils import customer_required
 
 
 @customer_ns.route('/order')
 class OrderOperations(Resource):
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(security="apiKey", params=auth_header,
                      responses={201: "Success", 404: "Order Not Found"})
     @customer_ns.response(model=Order_Detail_Dataset, code=201, description="Successful")
@@ -56,6 +58,7 @@ class OrderOperations(Resource):
         }, Order_Detail_Dataset), 201
 
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(body=Restaurant_ID_Dataset, security="apiKey", params=auth_header,
                      responses={201: "Success", 404: "Order Not Found"})
     @customer_ns.response(model=New_Order_Dataset, code=201, description="Successful")
@@ -92,6 +95,7 @@ class OrderOperations(Resource):
 @customer_ns.route('/orders')
 class ListOrders(Resource):
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(security="apiKey", params=auth_header,
                      responses={200: "Success", 404: "Order Not Found"})
     @customer_ns.marshal_list_with(Order_Dataset, code=200)
@@ -108,6 +112,7 @@ class ListOrders(Resource):
 @customer_ns.route('/order/delete')
 class OrderDelete(Resource):
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(body=Order_ID_Dataset, security="apiKey", params=auth_header,
                      responses={200: "Success", 404: "Order Not Found", 401: "Unauthorized",
                                 422: "Unprocessable Entity"})
@@ -145,6 +150,7 @@ class OrderDelete(Resource):
 @customer_ns.route('/order/cancel')
 class OrderCancel(Resource):
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(body=Order_ID_Dataset, security="apiKey", params=auth_header,
                      responses={200: "Success", 404: "Order Not Found", 401: "Unauthorized",
                                 422: "Unprocessable Entity"})
@@ -181,6 +187,7 @@ class OrderCancel(Resource):
 class OrderMenuOperations(Resource):
 
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(body=Order_Menu_ID_Dataset, security="apiKey", params=auth_header,
                      responses={200: "Success", 404: "Not Found"})
     @customer_ns.marshal_with(Response_Message, code=201)
@@ -215,6 +222,7 @@ class OrderMenuOperations(Resource):
 @customer_ns.route('/order/menu/remove')
 class RemoveOrderMenuFromOrder(Resource):
     @jwt_required()
+    @customer_required()
     @customer_ns.doc(body=Order_Menu_ID_Dataset, security="apiKey", params=auth_header,
                      responses={200: "Success", 404: "Not Found"})
     @customer_ns.marshal_with(Response_Message, code=201)
