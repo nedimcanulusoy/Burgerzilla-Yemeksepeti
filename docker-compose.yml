@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres
+    container_name: docker_burgerzilla
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    
+    
+    
