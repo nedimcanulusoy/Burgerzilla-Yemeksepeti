@@ -41,7 +41,7 @@ def create_app(config_class=Config):
 
     api.add_namespace(auth_ns)
     api.add_namespace(customer_ns)
-    api.add_namespace(restaurant_ns)
+    api.add_namespace(restaurant_ns, "/restaurant/<int:restaurant_id>")
     api.add_namespace(menu_ns)
     api.add_namespace(restaurants_ns)
 
