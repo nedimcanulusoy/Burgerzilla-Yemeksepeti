@@ -1,6 +1,5 @@
-import os, yaml
+import os, yaml, secrets
 from os.path import exists
-import secrets
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
