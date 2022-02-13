@@ -36,6 +36,33 @@ def owner_required():
     return wrapper
 
 
+def customer_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            user_id = get_jwt_identity()  # Get user id from JWT
+            # Get user roles
+            user_roles = UserRoles.query.filter_by(user_id=user_id).all()
+
+            is_owner = False  # Set default as False
+
+            for user_role in user_roles:
+                role = Role.query.get(user_role.role_id)  # Query for Roles table to check roles
+
+                if role.name == "Owner":  # Check is user an owner
+                    is_owner = True  # Set is_owner true
+
+            if not is_owner:  # If user is not an owner continue
+                return fn(*args, **kwargs)
+
+            return {"Message": "Customer only!"}, 403
+
+        return decorator
+
+    return wrapper
+
+
 def validate_owner_restaurant():
     def wrapper(fn):
         @wraps(fn)
