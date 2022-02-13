@@ -18,14 +18,13 @@ class MenuOperations(Resource):
                                   404: "Not Found"})
     @restaurant_ns.marshal_with(Menu_Dataset, code=201, envelope='menu')
     @owner_required()
-    def post(self):
+    def post(self, restaurant_id):
         """Adds a new menu to the restaurant"""
         json_data = request.get_json()
         name = json_data.get('name')
         price = json_data.get('price')
         description = json_data.get('description')
         image = json_data.get('image')
-        restaurant_id = json_data.get('restaurant_id')
 
         new_menu = Menu(name=name, price=price, description=description, image=image, restaurant_id=restaurant_id)
         db.session.add(new_menu)
@@ -34,43 +33,42 @@ class MenuOperations(Resource):
         return new_menu
 
 
-@restaurant_ns.route('/<int:id>/menu')
+@restaurant_ns.route('/menus')
 class GetRestaurantMenu(Resource):
     @restaurant_ns.doc(
         responses={201: "Success", 404: "Menu Not Found"})
     @restaurant_ns.marshal_list_with(Menu_Dataset, code=201, envelope='menus')
-    def get(self, id):
+    def get(self, restaurant_id):
         """Returns the menu according to the ID of the restaurant"""
-        restaurant_menus = Menu.query.filter_by(restaurant_id=id).all()
+        restaurant_menus = Menu.query.filter_by(restaurant_id=restaurant_id).all()
         restaurant_ns.logger.debug('GET request was `successful` at GetRestaurantMenu')
         return restaurant_menus, 201
 
 
-@restaurant_ns.route('/<int:id>/orders')
+@restaurant_ns.route('/orders')
 class RestaurantOrder(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_list_with(Order_Dataset)
-    def get(self, id):
+    def get(self, restaurant_id):
         """Returns which menu order was taken"""
-        orders = db.session.query(Order).filter(Order.restaurant_id == id, Order.status != "NEW").all()
+        orders = db.session.query(Order).filter(Order.restaurant_id == restaurant_id, Order.status != "NEW").all()
 
         restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrder')
 
         return orders, 200
 
 
-
-@restaurant_ns.route('/order/<int:id>/detail')
+@restaurant_ns.route('/order/<int:order_id>/detail')
 class RestaurantOrderDetail(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={201: "Success", 404: "Not Found"})
     @restaurant_ns.response(model=Restaurant_Order_Dataset, code=201, description='restaurant_order_item_detail')
-    def get(self, id):
+    def get(self, order_id):
         """Returns order details of the user to the Restaurant"""
-        order = db.session.query(Order).filter(Order.status != 'NEW', Order.id == id).first()
+        order = db.session.query(Order).filter(Order.status != 'NEW', Order.id == order_id).first()
         order_exists = order is not None
 
         if not order_exists:
@@ -80,7 +78,7 @@ class RestaurantOrderDetail(Resource):
 
         user = User.query.get(order.user_id)
 
-        order_menus = db.session.query(Order_Menu).filter(Order_Menu.order_id == order.id).all()
+        order_menus = db.session.query(Order_Menu).filter(Order_Menu.order_id == order_id).all()
         menus = []
         price = 0
 
@@ -104,15 +102,15 @@ class RestaurantOrderDetail(Resource):
         }, Restaurant_Order_Dataset), 201
 
 
-@restaurant_ns.route('/order/<int:id>/cancel')
+@restaurant_ns.route('/order/<int:order_id>/cancel')
 class OrderCancel(Resource):
     @jwt_required()
     @owner_required()
     @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_with(Response_Message)
-    def post(self, id):
+    def post(self, order_id):
         """Cancel user's order by restaurant"""
-        order = db.session.query(Order).filter(Order.id == id,
+        order = db.session.query(Order).filter(Order.id == order_id,
                                                Order.status == "PENDING" and "PREPARING" and "ON_THE_WAY").first()  # kullancinin siparisi var mi (sepet/order)
         order_exists = order is not None
 
@@ -120,7 +118,7 @@ class OrderCancel(Resource):
             restaurant_ns.logger.info('No valid order: at OrderCancel')
             return {"Message": "This order is not available to cancel!"}, 403
 
-        db.session.query(Order).filter_by(id=id).update(
+        db.session.query(Order).filter_by(id=order_id).update(
             {
                 'status': 'RESTAURANT_CANCELLED'})  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
         db.session.commit()
