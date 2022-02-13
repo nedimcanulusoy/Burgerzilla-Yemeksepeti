@@ -1,12 +1,12 @@
-from flask import Flask
-from flask_restx import Api
-from flask_migrate import Migrate
+import logging
 
-from burgerzilla.config import Config
+from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
+from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 
-import logging
+from burgerzilla.config import Config
 
 db = SQLAlchemy()
 jwt = JWTManager()
@@ -27,7 +27,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    from burgerzilla.routes import auth_ns, customer_ns, restaurant_ns, menu_ns
+    from burgerzilla.routes import auth_ns, customer_ns, restaurant_ns, menu_ns, restaurants_ns
 
     authorizations = {
         'Bearer Auth': {
@@ -43,5 +43,6 @@ def create_app(config_class=Config):
     api.add_namespace(customer_ns)
     api.add_namespace(restaurant_ns)
     api.add_namespace(menu_ns)
+    api.add_namespace(restaurants_ns)
 
     return app
