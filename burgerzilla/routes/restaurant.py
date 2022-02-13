@@ -94,6 +94,32 @@ class GetMenuDetail(Resource):
 
         return {"Message": "Menu successfully updated!"}, 200
 
+    @jwt_required()
+    @owner_required()
+    @validate_owner_restaurant()
+    @restaurant_ns.doc(security="apiKey", params=auth_header,
+                       responses={200: "Success", 400: "Validation Error", 403: "Invalid Credentials",
+                                  404: "Not Found"})
+    def delete(self, restaurant_id, menu_id):
+        menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
+        menu_exists = menu is not None
+
+        if not menu_exists:
+            return {"Message": "This menu is not exists!"}, 404
+
+        if menu.restaurant_id != restaurant_id:
+            return {"Message": "This menu is not yours!"}, 403
+
+        order_menus = db.session.query(Order_Menu).filter(Order_Menu.menu_id == menu_id).all()
+
+        for order_menu in order_menus:
+            db.session.delete(Order_Menu.query.get(order_menu.id))
+
+        db.session.delete(menu)
+        db.session.commit()
+
+        return {"Message": "Menu successfully deleted!"}, 200
+
 
 @restaurant_ns.route('/menus')
 class GetRestaurantMenu(Resource):
