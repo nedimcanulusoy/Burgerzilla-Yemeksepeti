@@ -1,6 +1,7 @@
 from flask_restx import fields
 
 from burgerzilla import api
+from burgerzilla.order_status import OrderStatus
 from burgerzilla.routes import customer_ns, restaurant_ns, auth_ns
 
 Restaurant_Dataset = restaurant_ns.model('Restaurant Name', {
@@ -40,7 +41,7 @@ Order_Detail_Dataset = customer_ns.model('OrderDetail', {
     "id": fields.Integer(),
     'name': fields.String(),
     'address': fields.String(),
-    'status': fields.String(default='NEW'),
+    'status': fields.String(default=OrderStatus.NEW),
     'timestamp': fields.String(),
     'restaurant_id': fields.Integer(),
     'user_id': fields.Integer(),
@@ -50,14 +51,14 @@ Order_Detail_Dataset = customer_ns.model('OrderDetail', {
 
 Order_Dataset = api.model('Order', {
     'id': fields.Integer(),
-    'status': fields.String(default='NEW'),
+    'status': fields.String(default=OrderStatus.NEW),
     'timestamp': fields.String(),
     'restaurant_id': fields.Integer(),
     'user_id': fields.Integer(),
 })
 
 New_Order_Dataset = customer_ns.model('Order', {
-    'status': fields.String(default='NEW'),
+    'status': fields.String(default=OrderStatus.NEW),
     'restaurant_id': fields.Integer(),
     'user_id': fields.Integer()
 })
@@ -73,6 +74,10 @@ Order_Menu_Dataset = restaurant_ns.model('Order_Menu', {
 
 Order_Menu_ID_Dataset = customer_ns.model('Order_Menu_ID', {
     'menu_id': fields.Integer()
+})
+
+Update_Order_Status = restaurant_ns.model('Update Order Status', {
+    'status': fields.String()
 })
 
 Restaurant_Order_Dataset = restaurant_ns.model('Order', {
