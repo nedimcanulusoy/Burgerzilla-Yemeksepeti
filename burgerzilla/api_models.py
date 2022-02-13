@@ -1,8 +1,10 @@
 from flask_restx import fields
+
 from burgerzilla import api
 from burgerzilla.routes import customer_ns, restaurant_ns, auth_ns
 
 Restaurant_Dataset = restaurant_ns.model('Restaurant', {
+    'id': fields.Integer(),
     'name': fields.String()
 })
 
