@@ -19,28 +19,37 @@ class OrderOperations(Resource):
     @customer_ns.response(model=Response_Message, code=404, description="Not found")
     def get(self):
         """Returns the detail of the existing cart (which is order)"""
+
         user_id = get_jwt_identity()
         order = Order.query.filter_by(status='NEW', user_id=user_id).first()
 
-        if order == None:
-            return {"Message": "There is no valid order!"}, 404
+        try:
+            if order == None:
+                customer_ns.logger.info('No valid order: at OrderOperations')
+                return {"Message": "There is no valid order!"}, 404
 
-        user = User.query.get(user_id)
+            user = User.query.get(user_id)
 
-        menus = Order_Menu.query.filter_by(order_id=order.id)
-        item_list = []
-        price = 0
+            menus = Order_Menu.query.filter_by(order_id=order.id)
+            item_list = []
+            price = 0
 
-        for menu in menus:
-            item = Menu.query.get(menu.menu_id)
+            for menu in menus:
+                item = Menu.query.get(menu.menu_id)
 
-            price += item.price
+                price += item.price
 
-            item_list.append(item)
+                item_list.append(item)
 
-        return marshal({"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
-                        'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price},
-                       Order_Detail_Dataset), 201
+            customer_ns.logger.info('GET request was `successful` at OrderOperations')
+            return marshal({"name": user.name, 'address': user.address, 'timestamp': order.timestamp, 'user_id': user_id,
+                            'restaurant_id': order.restaurant_id, "menus": item_list, "sum_price": price},
+                           Order_Detail_Dataset), 201
+
+        except Exception as e:
+            customer_ns.logger.debug('GET request was `unsuccessful` at OrderOperations')
+            return {"Message": f"An error occurred! {e}"}
+
 
     @jwt_required()
     @customer_ns.doc(body=Restaurant_ID_Dataset, security="apiKey", params=auth_header,
@@ -58,18 +67,24 @@ class OrderOperations(Resource):
                                                Order.status == "NEW").first()
         order_exists = order is not None
 
-        if order_exists:
-            return {"Message": "You already have an active order!"}, 422
+        try:
+            if order_exists:
+                customer_ns.logger.info('Valid active order: at OrderOperations')
+                return {"Message": "You already have an active order!"}, 422
 
-        new_order = Order(status="NEW", restaurant_id=restaurant_id,
-                          user_id=user_id)
+            new_order = Order(status="NEW", restaurant_id=restaurant_id,
+                              user_id=user_id)
 
-        db.session.add(new_order)
-        db.session.commit()
-        return marshal(
-            {"status": new_order.status, "restaurant_id": new_order.restaurant_id, "user_id": new_order.user_id},
-            New_Order_Dataset), 201
+            db.session.add(new_order)
+            db.session.commit()
+            customer_ns.logger.info('POST request was `successful` at OrderOperations')
+            return marshal(
+                {"status": new_order.status, "restaurant_id": new_order.restaurant_id, "user_id": new_order.user_id},
+                New_Order_Dataset), 201
 
+        except Exception as e:
+            customer_ns.logger.debug('POST request was `unsuccessful` at OrderOperations')
+            return {"Message": f"An error occurred! {e}"}
 
 @customer_ns.route('/orders')
 class ListOrders(Resource):
@@ -81,12 +96,19 @@ class ListOrders(Resource):
         """Returns all orders of the user from the beginning"""
         user_id = get_jwt_identity()
         orders = Order.query.filter_by(user_id=user_id)
-        ordersList = []
 
-        for order in orders:
-            ordersList.append(order)
+        try:
+            ordersList = []
 
-        return ordersList
+            for order in orders:
+                ordersList.append(order)
+
+            customer_ns.logger.info('POST request was `successful` at ListOrders')
+            return ordersList
+
+        except Exception as e:
+            customer_ns.logger.debug('GET request was `unsuccessful` at ListOrders')
+            return {"Message": f"An error occurred! {e}"}
 
 
 @customer_ns.route('/order/delete')
@@ -105,21 +127,28 @@ class OrderDelete(Resource):
         order = db.session.query(Order).get(order_id)
         order_exists = order is not None
 
-        if not order_exists:
-            return {"Message": "This order can not be deleted!"}, 422
+        try:
+            if not order_exists:
+                customer_ns.logger.info('Order not exists: at OrderDelete')
+                return {"Message": "This order can not be deleted!"}, 422
 
-        if order.user_id != user_id:
-            return {"Message": "This order is not yours!"}, 401
+            if order.user_id != user_id:
+                customer_ns.logger.info('Order access attempt by unauthorized user OrderDelete')
+                return {"Message": "This order is not yours!"}, 401
 
-        if order.status != "NEW" and "PENDING" and "DELETED":
-            return {"Message": "This order can not be deleted at this status!"}, 422
+            if order.status != "NEW" and "PENDING" and "DELETED":
+                customer_ns.logger.info('Attempt to delete unavailable order status OrderDelete')
+                return {"Message": "This order can not be deleted at this status!"}, 422
 
-        db.session.query(Order).filter_by(id=order_id).update(
-            {'status': 'DELETED'})
-        db.session.commit()
+            db.session.query(Order).filter_by(id=order_id).update({'status': 'DELETED'})
+            db.session.commit()
 
-        return {"Message": "Order successfully deleted!"}, 200
+            customer_ns.logger.info('Successful deletion: at OrderDelete')
+            return {"Message": "Order successfully deleted!"}, 200
 
+        except Exception as e:
+            customer_ns.logger.debug('POST request was `unsuccessful` at OrderDelete')
+            return {"Message": f"An error occurred! {e}"}
 
 @customer_ns.route('/order/cancel')
 class OrderCancel(Resource):
@@ -133,27 +162,31 @@ class OrderCancel(Resource):
         json_data = request.json
 
         order_id = json_data.get("order_id")
-
-
         order = db.session.query(Order).get(order_id)
-
-
         order_exists = order is not None  # kullancinin siparisi var mi (sepet/order)
 
-        if not order_exists:
-            return {"Message": "This order can not be cancelled!"}, 422
+        try:
+            if not order_exists:
+                customer_ns.logger.info('Order not exists: at OrderCancel')
+                return {"Message": "This order can not be cancelled!"}, 422
 
-        if order.user_id != user_id:
-            return {"Message": "This order is not yours!"}, 401
+            if order.user_id != user_id:
+                customer_ns.logger.info('Order access attempt by unauthorized user OrderCancel')
+                return {"Message": "This order is not yours!"}, 401
 
-        if order.status != "NEW" and "PENDING":
-            return {"Message": "This order can not be cancelled at this status!"}, 422
+            if order.status != "NEW" and "PENDING":
+                customer_ns.logger.info('Attempt to delete unavailable order status OrderCancel')
+                return {"Message": "This order can not be cancelled at this status!"}, 422
 
-        db.session.query(Order).filter_by(id=order_id).update(
-            {'status': 'CANCELLED'})
-        db.session.commit()
+            db.session.query(Order).filter_by(id=order_id).update({'status': 'CANCELLED'})
+            db.session.commit()
 
-        return {"Message": "Your order has been cancelled!"}, 200
+            customer_ns.logger.info('Successful cancellation: at OrderCancel')
+            return {"Message": "Your order has been cancelled!"}, 200
+
+        except Exception as e:
+            customer_ns.logger.debug('POST request was `unsuccessful` at OrderCancel')
+            return {"Message": f"An error occurred! {e}"}
 
 
 @customer_ns.route('/order/menu')
@@ -170,15 +203,22 @@ class OrderMenuOperations(Resource):
                                                Order.status == "NEW").first()  # kullancinin siparisi var mi (sepet/order)
         order_exists = order is not None  # kullancinin siparisi var mi (sepet/order)
 
-        if not order_exists:
-            return {"Message": "You do not have any order!"}, 422
+        try:
+            if not order_exists:
+                customer_ns.logger.info('Order not exists: at OrderMenuOperations')
+                return {"Message": "You do not have any order!"}, 422
 
-        menus = Order_Menu.query.filter_by(order_id=order.id)
-        menu_list = []
-        for each in menus:
-            menu_list.append(each)
+            menus = Order_Menu.query.filter_by(order_id=order.id)
+            menu_list = []
+            for each in menus:
+                menu_list.append(each)
 
-        return menu_list
+            customer_ns.logger.info('GET request was `successful` at OrderMenuOperations')
+            return menu_list
+
+        except Exception as e:
+            customer_ns.logger.debug('GET request was `unsuccessful` at OrderMenuOperations')
+            return {"Message": f"An error occurred! {e}"}
 
     @jwt_required()
     @customer_ns.doc(body=Order_Menu_ID_Dataset, security="apiKey", params=auth_header,
@@ -196,6 +236,8 @@ class OrderMenuOperations(Resource):
             add_menu = Order_Menu(menu_id=menu_id, order_id=order_id)
             db.session.add(add_menu)
             db.session.commit()
+            customer_ns.logger.info('POST request was `successful` at OrderMenuOperations')
             return {'Message': "Menu successfully added to your order!"}
         except:
+            customer_ns.logger.debug('POST request was `unsuccessful` at OrderMenuOperations')
             return {'Message': "Unfortunately the menu could not be added to your order, try again!"}
