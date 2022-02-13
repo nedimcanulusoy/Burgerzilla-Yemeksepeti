@@ -17,14 +17,10 @@ class RestaurantOperations(Resource):
     @restaurant_ns.marshal_list_with(Restaurant_Dataset, code=200, envelope='restaurants')
     def get(self):
         """Returns all restaurants"""
-        try:
-            all_restaurants = Restaurant.query.all()
-            restaurant_ns.logger.debug('GET request was `successful` at RestaurantOperations')
-            return all_restaurants
+        all_restaurants = Restaurant.query.all()
+        restaurant_ns.logger.debug('GET request was `successful` at RestaurantOperations')
+        return all_restaurants
 
-        except Exception as e:
-            restaurant_ns.logger.debug('GET request was `unsuccessful` at RestaurantOperations')
-            return {"Message": f"An error occurred! {e}"}
 
 
 @restaurant_ns.route('/menu')
@@ -44,16 +40,11 @@ class MenuOperations(Resource):
         image = json_data.get('image')
         restaurant_id = json_data.get('restaurant_id')
 
-        try:
-            new_menu = Menu(name=name, price=price, description=description, image=image, restaurant_id=restaurant_id)
-            db.session.add(new_menu)
-            db.session.commit()
-            restaurant_ns.logger.debug('POST request was `successful` at MenuOperations')
-            return new_menu
-
-        except Exception as e:
-            restaurant_ns.logger.debug('POST request was `unsuccessful` at MenuOperations')
-            return {"Message": f"An error occurred! {e}"}
+        new_menu = Menu(name=name, price=price, description=description, image=image, restaurant_id=restaurant_id)
+        db.session.add(new_menu)
+        db.session.commit()
+        restaurant_ns.logger.debug('POST request was `successful` at MenuOperations')
+        return new_menu
 
 
 @restaurant_ns.route('/<int:id>/menu')
@@ -63,14 +54,9 @@ class GetRestaurantMenu(Resource):
     @restaurant_ns.marshal_list_with(Menu_Dataset, code=201, envelope='menus')
     def get(self, id):
         """Returns the menu according to the ID of the restaurant"""
-        try:
-            restaurant_menus = Menu.query.filter_by(restaurant_id=id).all()
-            restaurant_ns.logger.debug('GET request was `successful` at GetRestaurantMenu')
-            return restaurant_menus, 201
-
-        except Exception as e:
-            restaurant_ns.logger.debug('GET request was `unsuccessful` at GetRestaurantMenu')
-            return {"Message": f"An error occurred! {e}"}
+        restaurant_menus = Menu.query.filter_by(restaurant_id=id).all()
+        restaurant_ns.logger.debug('GET request was `successful` at GetRestaurantMenu')
+        return restaurant_menus, 201
 
 
 @restaurant_ns.route('/<int:id>/orders')
@@ -80,18 +66,13 @@ class RestaurantOrder(Resource):
     @restaurant_ns.doc(params=auth_header, responses={200: "Success", 404: "Not Found"})
     @restaurant_ns.marshal_list_with(Order_Dataset)
     def get(self, id):
-        '''Returns which menu order was taken'''
+        """Returns which menu order was taken"""
+        orders = db.session.query(Order).filter(Order.restaurant_id == id, Order.status != "NEW").all()
 
-        try:
-            orders = db.session.query(Order).filter(Order.restaurant_id == id, Order.status != "NEW").all()
+        restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrder')
 
-            restaurant_ns.logger.debug('GET request was `successful` at RestaurantOrder')
+        return orders, 200
 
-            return orders, 200
-
-        except Exception as e:
-            restaurant_ns.logger.debug('GET request was `unsuccessful` at RestaurantOrder')
-            return {"Message": f"An error occurred! {e}"}
 
 
 @restaurant_ns.route('/order/<int:id>/detail')
@@ -101,7 +82,7 @@ class RestaurantOrderDetail(Resource):
     @restaurant_ns.doc(params=auth_header, responses={201: "Success", 404: "Not Found"})
     @restaurant_ns.response(model=Restaurant_Order_Dataset, code=201, description='restaurant_order_item_detail')
     def get(self, id):
-        '''Returns order details of the user to the Restaurant'''
+        """Returns order details of the user to the Restaurant"""
         order = db.session.query(Order).filter(Order.status != 'NEW', Order.id == id).first()
         order_exists = order is not None
 

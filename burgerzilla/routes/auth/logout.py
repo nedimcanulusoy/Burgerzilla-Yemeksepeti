@@ -1,6 +1,7 @@
-from flask_restx import Resource
-from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime, timezone
+
+from flask_jwt_extended import jwt_required, get_jwt
+from flask_restx import Resource
 
 from burgerzilla import auth_header, db
 from burgerzilla.api_models import Response_Message
@@ -16,17 +17,13 @@ class AuthLogout(Resource):
                  responses={201: "Success", 400: "Validation Error", 403: "Invalid Credentials"})
     def post(self):
         """User Logout"""
-        try:
-            jti = get_jwt()["jti"]
-            now = datetime.now(timezone.utc)
 
-            db.session.add(TokenBlocklist(jti=jti, created_at=now))
-            db.session.commit()
+        jti = get_jwt()["jti"]
+        now = datetime.now(timezone.utc)
 
-            auth_ns.logger.info('User successfully logged out and JWT revoked at AuthLogout!')
+        db.session.add(TokenBlocklist(jti=jti, created_at=now))
+        db.session.commit()
 
-            return {"Message": "Logged out and JWT revoked"}, 201
+        auth_ns.logger.info('User successfully logged out and JWT revoked at AuthLogout!')
 
-        except Exception as e:
-            auth_ns.logger.debug("An error occurred while logging out at AuthLogout!")
-            return {"Message": f"An error occurred! {e}"}
+        return {"Message": "Logged out and JWT revoked"}, 201

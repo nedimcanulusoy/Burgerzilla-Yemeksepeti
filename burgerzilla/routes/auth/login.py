@@ -1,7 +1,8 @@
 from flask import request
-from burgerzilla import db, jwt
-from flask_restx import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_restx import Resource
+
+from burgerzilla import db, jwt
 from burgerzilla.api_models import JWT_Dataset, Response_Message, Login_Dataset
 from burgerzilla.models import User, TokenBlocklist
 from burgerzilla.routes import auth_ns
@@ -24,27 +25,22 @@ class AuthLogin(Resource):
         json_data = request.get_json()
         username = json_data.get('username')
         password = json_data.get('password')
-        try:
-            if not username or not password:
-                auth_ns.logger.debug('Missing Username or Password at AuthLogin: %s', username)
-                return {"Message": "Username or Password missing!"}, 400
 
-            user = db.session.query(User).filter_by(username=username).first()
-            user_exists = user is not None
+        if not username or not password:
+            auth_ns.logger.debug('Missing Username or Password at AuthLogin: %s', username)
+            return {"Message": "Username or Password missing!"}, 400
 
-            if not user_exists or not user.verify_password(password):
-                auth_ns.logger.debug('Wrong Username or Password attempt at AuthLogin: %s', username)
-                return {"Message": "Your username or password is incorrect!"}, 403
+        user = db.session.query(User).filter_by(username=username).first()
+        user_exists = user is not None
 
-            access_token = create_access_token(identity=user.id)
-            refresh_token = create_refresh_token(identity=user.id)
+        if not user_exists or not user.verify_password(password):
+            auth_ns.logger.debug('Wrong Username or Password attempt at AuthLogin: %s', username)
+            return {"Message": "Your username or password is incorrect!"}, 403
 
-            auth_ns.logger.info('User successfully logged in at AuthLogin: %s', username)
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
 
-            return {"access_token": access_token, "refresh_token": refresh_token,
-                    "Message": "The token has been successfully created!"}, 200
+        auth_ns.logger.info('User successfully logged in at AuthLogin: %s', username)
 
-
-        except Exception as e:
-            auth_ns.logger.debug('An error occurred while logging in at AuthLogin: %s', username)
-            return {"Message": f"An error occurred! {e}"}
+        return {"access_token": access_token, "refresh_token": refresh_token,
+                "Message": "The token has been successfully created!"}, 200
