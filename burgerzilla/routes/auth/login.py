@@ -24,20 +24,27 @@ class AuthLogin(Resource):
         json_data = request.get_json()
         username = json_data.get('username')
         password = json_data.get('password')
+        try:
+            if not username or not password:
+                auth_ns.logger.debug('Missing Username or Password at AuthLogin: %s', username)
+                return {"Message": "Username or Password missing!"}
 
-        if not username or not password:
-            return {"Message": "Username or Password missing!"}
+            user = db.session.query(User).filter_by(username=username).first()
+            user_exists = user is not None
 
-        user = db.session.query(User).filter_by(username=username).first()
-        user_exists = user is not None
+            if not user_exists or not user.verify_password(password):
+                auth_ns.logger.debug('Wrong Username or Password attempt at AuthLogin: %s', username)
+                return {"Message": "Your username or password is incorrect!"}
 
-        if not user_exists or not user.verify_password(password):
-            return {"Message": "Your username or password is incorrect!"}
+            access_token = create_access_token(identity=user.id)
+            refresh_token = create_refresh_token(identity=user.id)
 
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
-        return {"access_token": access_token, "refresh_token": refresh_token,
-                "Message": "The token has been successfully created!"}
+            auth_ns.logger.info('User successfully logged in at AuthLogin: %s', username)
+
+            return {"access_token": access_token, "refresh_token": refresh_token,
+                    "Message": "The token has been successfully created!"}
 
 
-
+        except Exception as e:
+            auth_ns.logger.debug('An error occurred while logging in at AuthLogin: %s', username)
+            return {"Message": f"An error occurred! {e}"}
