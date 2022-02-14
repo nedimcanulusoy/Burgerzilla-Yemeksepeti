@@ -185,3 +185,22 @@ Burgerzilla-Yemeksepeti
 ### Database Diagram
 
 <p align="center"><img width="800" src="bzdata.png" alt="EFARS Logo"></p>
+
+---
+
+### Contributing
+
+Merge requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+### License
+
+This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details
+
+---
+
+### Special Thanks
+
+I would like to thank both [Patika.dev](www.patika.dev), [Yemeksepeti](www.yemeksepeti.com) and our
+trainer [İbrahim Ediz](https://github.com/ibrahimediz) for this wonderful Python & Flask bootcamp.
