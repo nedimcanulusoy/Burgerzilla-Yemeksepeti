@@ -25,7 +25,7 @@ You can find the main repository of this project [here](https://github.com/TheNa
 
 ### Installation
 
-**a)** Clone this repository
+**1.** Clone this repository
 
 ```
 https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
@@ -33,21 +33,21 @@ https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
 
 ---
 
-**b)** There are two ways to run project
+**2.** For Production
 
-1. **Production** (**Recommended** for stable and live usage):
-   * Run with `docker-compose -f docker-compose.prod.yml up`
-
----
-
-2. **Development** (Choose this if you want to do experimental tests or develop this project.):
-   * Create a virtual environment with `virtualenv venv`
-   * Install requirements with `pip3 install -r requirements.txt`
-   * Run PostgreSQL Database with `docker-compose up`
-   * Run Flask with `python3 -m flask run`
+* Run with `docker-compose -f docker-compose.prod.yml up`
 
 ---
-**WARNING:** If you run into any problems running prod or dev docker, do the following in order;
+
+**3.** For Development
+
+* Create a virtual environment with `virtualenv venv`
+* Install requirements with `pip3 install -r requirements.txt`
+* Run PostgreSQL Database with `docker-compose up`
+* Run Flask with `python3 -m flask run`
+
+---
+**WARNING:** If you encounter any issues while running Docker Compose, do the following in order;
 
 * `docker-compose down`
 * `docker system prune -a`
@@ -202,5 +202,5 @@ This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE
 
 ### Special Thanks
 
-I would like to thank both [Patika.dev](www.patika.dev), [Yemeksepeti](www.yemeksepeti.com) and our
+I would like to thank both [Patika.dev](https://www.patika.dev), [Yemeksepeti](https://www.yemeksepeti.com) and our
 trainer [İbrahim Ediz](https://github.com/ibrahimediz) for this wonderful Python & Flask bootcamp.
