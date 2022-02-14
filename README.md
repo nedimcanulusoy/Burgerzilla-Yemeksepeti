@@ -36,7 +36,7 @@ https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
     1. **Production** (Recommended for live usage):
         * Run with `docker-compose -f docker-compose.prod.yml up`
 
-    2. **Development** (Select this if you want to improve this project):
+    2. **Development** (Choose this if you want to do experimental tests or develop this project.):
         * Create a virtual environment with `virtualenv venv`
         * Install requirements with `pip3 install -r requirements.txt`
         * Run PostgreSQL Database with `docker-compose up`
