@@ -1,5 +1,5 @@
 <h1 align="center"> Burgerzilla </h1>
-<h2 align="center"> Python & Flask Web Development Capstone Project </h2>
+<h2 align="center"> Python & Flask Web Development Bootcamp Capstone Project </h2>
 
 ### Overview
 
