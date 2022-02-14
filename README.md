@@ -47,8 +47,8 @@ https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
 
 * `docker-compose down`
 * `docker system prune -a`
-* `rm -rf .postgres_data_dev`
-* `rm -rf .postgres_data_prod`
+* `sudo rm -rf .postgres_data_dev`
+* `sudo rm -rf .postgres_data_prod`
 
 and run your docker again.
 
