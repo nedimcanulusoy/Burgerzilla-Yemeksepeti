@@ -174,8 +174,8 @@ class RestaurantOrderDetail(Resource):
         price = 0
 
         for order_menu in order_menus:
-            item = Menu.query.get(order_menu.menu_id)  # menu item
-            price += item.price  # menu price
+            item = Menu.query.get(order_menu.menu_id)
+            price += item.price
 
             menus.append(item)
 
@@ -203,7 +203,7 @@ class OrderCancel(Resource):
     def post(self, restaurant_id, order_id):
         """Cancel user's order by restaurant"""
         order = db.session.query(Order).filter(Order.id == order_id,
-                                               Order.status == OrderStatus.PENDING and OrderStatus.PENDING and OrderStatus.ON_THE_WAY).first()  # kullancinin siparisi var mi (sepet/order)
+                                               Order.status == OrderStatus.PENDING and OrderStatus.PENDING and OrderStatus.ON_THE_WAY).first()
         order_exists = order is not None
 
         if not order_exists:
@@ -212,7 +212,7 @@ class OrderCancel(Resource):
 
         db.session.query(Order).filter_by(id=order_id).update({
             'status': OrderStatus.RESTAURANT_CANCELLED
-        })  # Delete degil update olacak burada status icin """Statusu Cancel yap"""
+        })
 
         db.session.commit()
 
