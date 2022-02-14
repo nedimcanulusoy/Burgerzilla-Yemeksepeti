@@ -34,12 +34,13 @@ https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
 2. There are two ways to run project
 
     1. **Production** (Recommended for live usage):
-        * `docker-compose -f docker-compose.prod.yml up`
+        * Run with `docker-compose -f docker-compose.prod.yml up`
 
     2. **Development** (Select this if you want to improve this project):
-        * `pip3 install -r requirements.txt`
-        * `docker-compose up (Runs Database)`
-        * `python3 -m flask run`
+        * Create a virtual environment with `virtualenv venv`
+        * Install requirements with `pip3 install -r requirements.txt`
+        * Run PostgreSQL Database with `docker-compose up`
+        * Run Flask with `python3 -m flask run`
 
 ---
 **Warning**: If you run into any problems running prod or dev docker, do the following in order;
