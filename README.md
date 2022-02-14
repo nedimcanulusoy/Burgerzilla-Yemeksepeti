@@ -33,7 +33,7 @@ https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
 
 2. There are two ways to run project
 
-    1. **Production** (Recommended for live usage):
+    1. **Production** (Recommended for stable and live usage):
         * Run with `docker-compose -f docker-compose.prod.yml up`
 
     2. **Development** (Choose this if you want to do experimental tests or develop this project.):
