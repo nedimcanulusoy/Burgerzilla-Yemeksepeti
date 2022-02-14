@@ -25,25 +25,29 @@ You can find the main repository of this project [here](https://github.com/TheNa
 
 ### Installation
 
-1. Clone this repository
+**a)** Clone this repository
 
 ```
 https://github.com/Yemeksepeti-Python-Bootcamp/burgerzilla_nedimcanulusoy.git
 ```
 
-2. There are two ways to run project
+---
 
-    1. **Production** (**Recommended** for stable and live usage):
-        * Run with `docker-compose -f docker-compose.prod.yml up`
+**b)** There are two ways to run project
 
-    2. **Development** (Choose this if you want to do experimental tests or develop this project.):
-        * Create a virtual environment with `virtualenv venv`
-        * Install requirements with `pip3 install -r requirements.txt`
-        * Run PostgreSQL Database with `docker-compose up`
-        * Run Flask with `python3 -m flask run`
+1. **Production** (**Recommended** for stable and live usage):
+   * Run with `docker-compose -f docker-compose.prod.yml up`
 
 ---
-**Warning:** If you run into any problems running prod or dev docker, do the following in order;
+
+2. **Development** (Choose this if you want to do experimental tests or develop this project.):
+   * Create a virtual environment with `virtualenv venv`
+   * Install requirements with `pip3 install -r requirements.txt`
+   * Run PostgreSQL Database with `docker-compose up`
+   * Run Flask with `python3 -m flask run`
+
+---
+**WARNING:** If you run into any problems running prod or dev docker, do the following in order;
 
 * `docker-compose down`
 * `docker system prune -a`
