@@ -162,7 +162,7 @@ class OrderCancel(Resource):
 
         order_id = json_data.get("order_id")
         order = db.session.query(Order).get(order_id)
-        order_exists = order is not None  # kullancinin siparisi var mi (sepet/order)
+        order_exists = order is not None
 
         if not order_exists:
             customer_ns.logger.info('Order not exists: at OrderCancel')
