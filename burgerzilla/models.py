@@ -1,7 +1,9 @@
-from burgerzilla import db
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
+
 from flask_user import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from burgerzilla import db
 
 
 # Define the User table
@@ -29,7 +31,6 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, attempted_password):
         return check_password_hash(self.password_hash, attempted_password)
-
 
     def __repr__(self):
         return "<User(name={}, surname={}, username={}, email={}, address={}, restaurant_id={})>".format(
