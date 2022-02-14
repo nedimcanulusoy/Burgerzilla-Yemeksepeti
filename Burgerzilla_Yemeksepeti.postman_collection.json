@@ -1,0 +1,764 @@
+{
+  "info": {
+    "_postman_id": "f5f027ee-b018-4fa3-846a-40461e71b1f7",
+    "name": "Burgerzilla_Yemeksepeti",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"surname\": \"string\",\n  \"username\": \"string\",\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"address\": \"string\",\n  \"is_owner\": false,\n  \"restaurant\": {\n    \"name\": \"string\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/auth/register",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"string\",\n  \"password\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/auth/login",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/auth/logout",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "item": [
+        {
+          "name": "Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order Cancel",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order/cancel",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order",
+                "cancel"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order Delete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order/delete",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order",
+                "delete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order Menu Add",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"menu_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order/menu/add",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order",
+                "menu",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order Menu Remove",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"menu_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/order/menu/remove",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "order",
+                "menu",
+                "remove"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/customer/orders",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customer",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurant",
+      "item": [
+        {
+          "name": "New Menu",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY0NDgwMDA1OCwianRpIjoiNzQ2MWQwZWItOGI5OS00NjA1LWE2OGEtZWQwZjhhYTNjZTU4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MiwibmJmIjoxNjQ0ODAwMDU4LCJleHAiOjE2NDQ4MDA5NTh9.xw-Ao0Gq_dbJZMe1B1fYo908CzoWUAPWX5EK31aRtzw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"price\": 0,\n  \"description\": \"string\",\n  \"image\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/menu",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "menu"
+              ],
+              "query": [
+                {
+                  "key": "restaurant_id/menu",
+                  "value": null,
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": "",
+                  "description": "Please enter restaurant_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Menu",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY0NDgwMDA1OCwianRpIjoiNzQ2MWQwZWItOGI5OS00NjA1LWE2OGEtZWQwZjhhYTNjZTU4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MiwibmJmIjoxNjQ0ODAwMDU4LCJleHAiOjE2NDQ4MDA5NTh9.xw-Ao0Gq_dbJZMe1B1fYo908CzoWUAPWX5EK31aRtzw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/menu/:menu_id",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "menu",
+                ":menu_id"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": "",
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "menu_id",
+                  "value": "",
+                  "description": "Please enter menu_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Menu",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"price\": 0,\n  \"description\": \"string\",\n  \"image\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/menu/:menu_id",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "menu",
+                ":menu_id"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": "",
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "menu_id",
+                  "value": "",
+                  "description": "Please enter menu_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Specific Menu",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY0NDc5OTkyMiwianRpIjoiM2Q2MGIxN2MtYjdiZS00MzMyLWEwZmEtYWNkODI5MGZlODgxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MiwibmJmIjoxNjQ0Nzk5OTIyLCJleHAiOjE2NDQ4MDA4MjJ9.2LgNZk3uKqrSPNSMTIHYbY2X3dGU6LY8GtfkYWOOn2I",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/menu/:menu_id",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "menu",
+                ":menu_id"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": "",
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "menu_id",
+                  "value": "",
+                  "description": "Please enter menu_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Restaurant Menu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/menus",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "menus"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": "",
+                  "description": "Please enter restaurant_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order By Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/order/:order_id/cancel",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "order",
+                ":order_id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": null,
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "order_id",
+                  "value": null,
+                  "description": "Please enter order_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Order Detail for Restaurant",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/order/:order_id/detail",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "order",
+                ":order_id",
+                "detail"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": null,
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "order_id",
+                  "value": null,
+                  "description": "Please enter order_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"string\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/order/:order_id/status",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "order",
+                ":order_id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": null,
+                  "description": "Please enter restaurant_id"
+                },
+                {
+                  "key": "order_id",
+                  "value": null,
+                  "description": "Please enter order_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Taken Order Menu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurant/:restaurant_id/orders",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurant",
+                ":restaurant_id",
+                "orders"
+              ],
+              "variable": [
+                {
+                  "key": "restaurant_id",
+                  "value": null,
+                  "description": "Please enter restaurant_id"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "All Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/restaurants",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "restaurants"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Menus",
+      "item": [
+        {
+          "name": "All Menus",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/menus/all",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "menus",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
