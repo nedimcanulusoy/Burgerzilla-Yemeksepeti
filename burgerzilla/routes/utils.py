@@ -5,7 +5,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from burgerzilla.models import UserRoles, Role, User
 
 '''
-A decorator on the restaurant side to restrict unauthorized actions by other non-owners users
+A decorator on both the customer and restaurant side to restrict unauthorized actions between each other.
 '''
 
 
